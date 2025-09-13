@@ -1,9 +1,14 @@
-import React from 'react'
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import ProjectsTable from "@/components/dashboard/Projects";
+import React from "react";
 
 const Page = () => {
   return (
-    <div>Page</div>
-  )
-}
+    <div>
+      <DashboardHeader />
+      <ProjectsTable/>
+    </div>
+  );
+};
 
-export default Page
+export default Page;
