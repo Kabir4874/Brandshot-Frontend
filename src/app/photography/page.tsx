@@ -12,9 +12,8 @@ export default function ProductPhotography() {
   const [seed, setSeed] = useState(50);
   const [steps, setSteps] = useState(25);
   const [aiLabels, setAiLabels] = useState(true);
-  const [progress, setProgress] = useState(42); // demo value
+  const [progress, setProgress] = useState(42);
 
-  // demo ticking progress while “generating”
   useEffect(() => {
     const t = setInterval(() => {
       setProgress((p) => (p >= 100 ? 42 : p + 1));
@@ -36,7 +35,7 @@ export default function ProductPhotography() {
       <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-16">
         {/* Title + subtitle */}
         <header className="mb-5">
-          <h1 className="text-3xl font-extrabold leading-none tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-extrabold leading-none tracking-tight">
             Product Photography
           </h1>
           <p className="mt-1 text-[13px] text-nano-gray-100/85">
@@ -50,44 +49,46 @@ export default function ProductPhotography() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder=" "
-            className="mb-3 h-36 w-[620px] max-w-full resize-none rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-transparent focus-visible:ring-0"
+            aria-label="Main prompt"
+            className="mb-3 h-36 w-full md:w-[620px] max-w-full resize-none rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-transparent focus-visible:ring-0"
           />
           <Input
             placeholder=" "
-            className="h-9 w-[420px] max-w-full rounded-md border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-transparent focus-visible:ring-0"
+            aria-label="Short prompt"
+            className="h-9 w-full md:w-[420px] max-w-full rounded-md border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-transparent focus-visible:ring-0"
           />
         </section>
 
         {/* Controls grid */}
-        <section className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <section className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-2">
           {/* Seed slider + value */}
-          <div className="flex items-center gap-6">
-            <div className="min-w-[80px] text-[13px] text-nano-gray-100/85">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-2">
+            <div className="sm:min-w-[80px] text-[13px] text-nano-gray-100/85">
               Seed
             </div>
-            <div className="flex w-full items-center gap-4">
+            <div className="flex w-full items-center gap-3">
               <ThinSlider value={seed} onChange={(v) => setSeed(v)} />
-              <span className="w-8 text-right text-[13px] text-nano-gray-100/85">
+              <span className="w-10 text-right text-[13px] text-nano-gray-100/85">
                 {seed}
               </span>
             </div>
           </div>
 
           {/* Steps slider + value */}
-          <div className="flex items-center gap-6">
-            <div className="min-w-[80px] text-[13px] text-nano-gray-100/85">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-2">
+            <div className="sm:min-w-[80px] text-[13px] text-nano-gray-100/85">
               Steps
             </div>
-            <div className="flex w-full items-center gap-4">
+            <div className="flex w-full items-center gap-3">
               <ThinSlider value={steps} onChange={(v) => setSteps(v)} />
-              <span className="w-8 text-right text-[13px] text-nano-gray-100/85">
+              <span className="w-10 text-right text-[13px] text-nano-gray-100/85">
                 {steps}
               </span>
             </div>
           </div>
 
           {/* AI labels toggle */}
-          <div className="md:col-span-2 flex items-center justify-between">
+          <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-[13px] text-nano-gray-100/85">
               AI-edited labels on generated images
             </div>
@@ -100,11 +101,11 @@ export default function ProductPhotography() {
         </section>
 
         {/* Action buttons */}
-        <section className="mb-6 flex items-center gap-3">
-          <Button className="h-8 rounded-full bg-nano-olive-700 px-3 text-[13px] font-medium text-nano-mint hover:bg-nano-deep-900">
+        <section className="mb-6 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
+          <Button className="h-8 rounded-full bg-nano-olive-700 px-3 text-[13px] font-medium text-nano-mint hover:bg-nano-deep-900 w-full sm:w-auto">
             Auto-Scenario
           </Button>
-          <Button className="h-8 rounded-full bg-emerald-500 px-3 text-[13px] font-semibold text-black hover:bg-emerald-500/90">
+          <Button className="h-8 rounded-full bg-emerald-500 px-3 text-[13px] font-semibold text-black hover:bg-emerald-500/90 w-full sm:w-auto">
             Generate
           </Button>
         </section>
@@ -123,7 +124,7 @@ export default function ProductPhotography() {
             Generated Images
           </h2>
 
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
             {IMAGES.slice(0, 5).map((src) => (
               <figure
                 key={src}
@@ -140,7 +141,7 @@ export default function ProductPhotography() {
           </div>
 
           {/* second row left image */}
-          <div className="mt-4 grid max-w-[220px] grid-cols-1">
+          <div className="mt-4 grid grid-cols-1 max-w-full sm:max-w-[220px]">
             <figure className="aspect-[4/3] overflow-hidden rounded-lg bg-nano-olive-700 ring-1 ring-nano-forest-800">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

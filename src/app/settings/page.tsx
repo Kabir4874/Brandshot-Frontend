@@ -39,7 +39,7 @@ export default function SettingsPage() {
 
         {/* Account */}
         <Section title="Account">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10 ring-1 ring-nano-deep-900">
                 <AvatarImage src="/avatar-sarah.jpg" alt="Sarah Miller" />
@@ -88,7 +88,6 @@ export default function SettingsPage() {
         {/* Prompt Presets */}
         <Section title="Prompt Presets">
           <Tabs defaultValue="social" className="w-full">
-            {/* faint baseline across the row */}
             <TabsList className="relative h-auto w-auto justify-start gap-8 border-b border-nano-deep-900 bg-transparent p-0">
               <TabsTrigger value="social" className="px-0 py-2 text-[13px] font-semibold">
                 Social Media
@@ -193,7 +192,7 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
         <div className="text-[13px] font-semibold text-nano-gray-100">
           {label}
@@ -228,7 +227,7 @@ function PresetForm({
           Platform
         </Label>
         <Select value={platform} onValueChange={setPlatform}>
-          <SelectTrigger className="h-11 w-[420px] justify-between rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 hover:bg-nano-olive-700 focus:ring-0 focus:ring-offset-0">
+          <SelectTrigger className="h-11 w-full lg:w-[420px] justify-between rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 hover:bg-nano-olive-700 focus:ring-0 focus:ring-offset-0">
             <SelectValue placeholder="Select a platform" />
           </SelectTrigger>
           <SelectContent className="border-0 bg-nano-olive-700 text-nano-gray-100">
@@ -246,7 +245,7 @@ function PresetForm({
           Content Type
         </Label>
         <Select value={ctype} onValueChange={setCtype}>
-          <SelectTrigger className="h-11 w-[420px] justify-between rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 hover:bg-nano-olive-700 focus:ring-0 focus:ring-offset-0">
+          <SelectTrigger className="h-11 w-full lg:w-[420px] justify-between rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 hover:bg-nano-olive-700 focus:ring-0 focus:ring-offset-0">
             <SelectValue placeholder="Select content type" />
           </SelectTrigger>
           <SelectContent className="border-0 bg-nano-olive-700 text-nano-gray-100">
@@ -267,12 +266,12 @@ function PresetForm({
           placeholder="Enter your prompt..."
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          className="h-36 w-[620px] resize-none rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-nano-gray-100/60 focus-visible:ring-0"
+          className="h-36 w-full lg:w-[620px] resize-none rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-nano-gray-100/60 focus-visible:ring-0"
         />
       </div>
 
       {/* Save button */}
-      <div className="mt-6 flex justify-end pr-10">
+      <div className="mt-6 flex justify-end lg:pr-10">
         <Button className="h-8 rounded-full bg-emerald-500 px-4 text-[13px] font-semibold text-black hover:bg-emerald-500/90">
           Save Preset
         </Button>

@@ -56,7 +56,7 @@ export default function ImageEditingPage() {
 
   return (
     <main className="w-full bg-nano-deep-950 text-nano-white">
-      <div className="mx-auto max-w-[1100px] px-6 pt-6 pb-16">
+      <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-16">
         {/* Title */}
         <h1 className="text-[28px] font-extrabold leading-none tracking-tight">
           Image Editing
@@ -68,7 +68,7 @@ export default function ImageEditingPage() {
             Upload Images
           </h2>
 
-          <div className="grid max-w-[520px] gap-4">
+          <div className="grid w-full md:max-w-[520px] gap-4">
             {/* Image 1 */}
             <UploadField
               label="Image 1"
@@ -98,7 +98,7 @@ export default function ImageEditingPage() {
               Preview
             </h2>
 
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
               {img1 && <FramedPreview src={img1} />}
               {img2 && <FramedPreview src={img2} />}
             </div>
@@ -114,12 +114,10 @@ export default function ImageEditingPage() {
             Editing Actions
           </h2>
 
-          {/* left / center / right layout */}
-          <div className="flex items-center gap-4">
+          {/* wrap on mobile, same row on desktop */}
+          <div className="flex flex-wrap items-center gap-3 md:gap-4">
             <ButtonPill label="Relight" />
-
             <ButtonPill label="Replace Background" />
-
             <ButtonPill label="Merge" />
           </div>
         </section>
@@ -138,22 +136,22 @@ export default function ImageEditingPage() {
                   alt="Edited output"
                   fill
                   className="object-cover"
-                  sizes="(max-width: 1100px) 100vw, 1100px"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1100px) 100vw, 1100px"
                   priority
                 />
               </div>
             </figure>
           </div>
 
-          {/* Comparison slider (left label, thin white bar, % right) */}
-          <div className="mt-2 flex items-center gap-6">
-            <div className="min-w-[130px] text-[12px] text-nano-gray-100/85">
+          {/* Comparison slider */}
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-6">
+            <div className="text-[12px] text-nano-gray-100/85 sm:min-w-[130px]">
               Comparison Slider
             </div>
 
             <ThinBar value={compare} onChange={setCompare} />
 
-            <div className="w-10 text-right text-[12px] text-nano-gray-100/85">
+            <div className="text-right text-[12px] text-nano-gray-100/85 sm:w-10">
               {compare}%
             </div>
           </div>
@@ -229,7 +227,8 @@ function UploadField({
           if (file) onDropFile(file);
         }}
         className={[
-          "flex h-10 w-[420px] max-w-full cursor-pointer items-center justify-between rounded-md border px-3",
+          // Full width on small, fixed width on desktop (keeps original look)
+          "flex h-10 w-full md:w-[420px] items-center justify-between rounded-md border px-3",
           "bg-nano-olive-700 border-nano-forest-800 text-nano-gray-100",
           "hover:bg-nano-olive-700/95",
           dragOver ? "ring-2 ring-emerald-500/60" : "ring-0",
@@ -268,15 +267,21 @@ function UploadField({
 /** Framed photo preview to match the screenshot (mat + light frame + slight shadow) */
 function FramedPreview({ src }: { src: string }) {
   return (
-    <div className="h-[210px] w-[250px] rounded-md bg-[#DADFD8] p-[10px] shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+    <div
+      className="
+        w-full max-w-[320px] aspect-[4/3]
+        md:w-[250px] md:h-[210px] md:aspect-auto
+        rounded-md bg-[#DADFD8] p-[10px] shadow-[0_1px_0_rgba(0,0,0,0.05)]
+      "
+    >
       <div className="h-full w-full rounded-[6px] bg-white p-[10px] shadow-sm">
-        <div className="relative h-full w-full rounded-[4px] overflow-hidden">
+        <div className="relative h-full w-full overflow-hidden rounded-[4px]">
           <Image
             src={src}
             alt="preview"
             fill
             className="object-cover"
-            sizes="250px"
+            sizes="(max-width: 768px) 320px, 250px"
           />
         </div>
       </div>

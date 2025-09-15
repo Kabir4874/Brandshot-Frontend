@@ -3,7 +3,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 
@@ -33,7 +32,7 @@ export default function ProjectGalleryPage() {
       <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-14">
         {/* Title + meta */}
         <header className="mb-4">
-          <h1 className="text-3xl font-extrabold leading-none tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-extrabold leading-none tracking-tight">
             Project: Marketing Campaign
           </h1>
           <p className="mt-1 text-[13px] text-nano-gray-100/85">
@@ -51,38 +50,34 @@ export default function ProjectGalleryPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search"
+            aria-label="Search images"
             className="h-10 w-full rounded-md border-0 bg-nano-olive-700 pl-9 text-[14px] text-nano-mint placeholder:text-nano-mint/55 focus-visible:ring-1 focus-visible:ring-nano-mint/30"
           />
         </div>
 
         {/* Filters + actions */}
-        <div className="mb-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <FilterPill
-              active={mode === "all"}
-              onClick={() => setMode("all")}
-            >
-              All
-            </FilterPill>
-            <FilterPill
-              active={mode === "t2i"}
-              onClick={() => setMode("t2i")}
-            >
-              Text to Image
-            </FilterPill>
-            <FilterPill
-              active={mode === "i2i"}
-              onClick={() => setMode("i2i")}
-            >
-              Image to Image
-            </FilterPill>
+        <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          {/* Pills: horizontal scroll on small, keep gap on desktop */}
+          <div className="-mx-4 overflow-x-auto px-4 md:mx-0 md:overflow-visible md:px-0">
+            <div className="flex w-max items-center gap-2 md:gap-3">
+              <FilterPill active={mode === "all"} onClick={() => setMode("all")}>
+                All
+              </FilterPill>
+              <FilterPill active={mode === "t2i"} onClick={() => setMode("t2i")}>
+                Text to Image
+              </FilterPill>
+              <FilterPill active={mode === "i2i"} onClick={() => setMode("i2i")}>
+                Image to Image
+              </FilterPill>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button className="h-8 rounded-md bg-nano-olive-700 px-3 text-[13px] font-medium text-nano-mint hover:bg-nano-deep-900">
+          {/* Actions: stack or split evenly on small, right-aligned on md+ */}
+          <div className="grid grid-cols-2 gap-2 md:flex md:items-center md:gap-2 md:justify-end">
+            <Button className="h-8 rounded-md bg-nano-olive-700 px-3 text-[13px] font-medium text-nano-mint hover:bg-nano-deep-900 w-full md:w-auto">
               Quick Compare
             </Button>
-            <Button className="h-8 rounded-md bg-emerald-500 px-3 text-[13px] font-semibold text-black hover:bg-emerald-500/90">
+            <Button className="h-8 rounded-md bg-emerald-500 px-3 text-[13px] font-semibold text-black hover:bg-emerald-500/90 w-full md:w-auto">
               Download All
             </Button>
           </div>
@@ -90,7 +85,7 @@ export default function ProjectGalleryPage() {
 
         {/* Image grid */}
         <section className="mb-8">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
             {IMAGES.slice(0, 12).map((src, i) => (
               <figure
                 key={i}
