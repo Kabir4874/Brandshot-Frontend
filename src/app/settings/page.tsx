@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -24,7 +23,6 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { ChevronDown } from "lucide-react";
 
 export default function SettingsPage() {
   const [platform, setPlatform] = useState("");
@@ -90,10 +88,17 @@ export default function SettingsPage() {
         {/* Prompt Presets */}
         <Section title="Prompt Presets">
           <Tabs defaultValue="social" className="w-full">
-            <TabsList className="h-auto w-auto justify-start gap-8 border-b border-nano-deep-900 bg-transparent p-0">
-              <TabTrigger value="social" label="Social Media" />
-              <TabTrigger value="marketing" label="Marketing" />
-              <TabTrigger value="ecom" label="E-commerce" />
+            {/* faint baseline across the row */}
+            <TabsList className="relative h-auto w-auto justify-start gap-8 border-b border-nano-deep-900 bg-transparent p-0">
+              <TabsTrigger value="social" className="px-0 py-2 text-[13px] font-semibold">
+                Social Media
+              </TabsTrigger>
+              <TabsTrigger value="marketing" className="px-0 py-2 text-[13px] font-semibold">
+                Marketing
+              </TabsTrigger>
+              <TabsTrigger value="ecom" className="px-0 py-2 text-[13px] font-semibold">
+                E-commerce
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="social" className="mt-6">
@@ -200,17 +205,6 @@ function Row({
   );
 }
 
-function TabTrigger({ value, label }: { value: string; label: string }) {
-  return (
-    <TabsTrigger
-      value={value}
-      className="relative rounded-none border-0 bg-transparent px-0 py-2 text-[13px] font-semibold text-nano-gray-100 data-[state=active]:text-white data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:scale-x-0 after:bg-nano-gray-100 after:content-[''] data-[state=active]:after:scale-x-100"
-    >
-      {label}
-    </TabsTrigger>
-  );
-}
-
 function PresetForm({
   platform,
   setPlatform,
@@ -236,7 +230,6 @@ function PresetForm({
         <Select value={platform} onValueChange={setPlatform}>
           <SelectTrigger className="h-11 w-[420px] justify-between rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 hover:bg-nano-olive-700 focus:ring-0 focus:ring-offset-0">
             <SelectValue placeholder="Select a platform" />
-            <ChevronDown className="h-4 w-4 text-nano-gray-100" />
           </SelectTrigger>
           <SelectContent className="border-0 bg-nano-olive-700 text-nano-gray-100">
             <SelectItem value="instagram">Instagram</SelectItem>
@@ -255,7 +248,6 @@ function PresetForm({
         <Select value={ctype} onValueChange={setCtype}>
           <SelectTrigger className="h-11 w-[420px] justify-between rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 hover:bg-nano-olive-700 focus:ring-0 focus:ring-offset-0">
             <SelectValue placeholder="Select content type" />
-            <ChevronDown className="h-4 w-4 text-nano-gray-100" />
           </SelectTrigger>
           <SelectContent className="border-0 bg-nano-olive-700 text-nano-gray-100">
             <SelectItem value="caption">Caption</SelectItem>

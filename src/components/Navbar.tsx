@@ -9,7 +9,7 @@ import Image from "next/image";
 
 export default function NanoBananaNavbar() {
   return (
-    <div className="w-full bg-nano-deep-950 text-white">
+    <div className="w-full bg-nano-deep-950 text-white border-b py-2">
       <nav
         role="navigation"
         aria-label="Main Navigation"

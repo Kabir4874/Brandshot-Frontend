@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import * as RdxSlider from "@radix-ui/react-slider";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Progress } from "@/components/ui/progress";
 
 export default function ProductPhotography() {
   const [prompt, setPrompt] = useState("");
@@ -63,9 +62,11 @@ export default function ProductPhotography() {
         <section className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Seed slider + value */}
           <div className="flex items-center gap-6">
-            <div className="min-w-[80px] text-[13px] text-nano-gray-100/85">Seed</div>
+            <div className="min-w-[80px] text-[13px] text-nano-gray-100/85">
+              Seed
+            </div>
             <div className="flex w-full items-center gap-4">
-              <StyledSlider value={seed} onValueChange={(v) => setSeed(v[0])} />
+              <ThinSlider value={seed} onChange={(v) => setSeed(v)} />
               <span className="w-8 text-right text-[13px] text-nano-gray-100/85">
                 {seed}
               </span>
@@ -74,16 +75,18 @@ export default function ProductPhotography() {
 
           {/* Steps slider + value */}
           <div className="flex items-center gap-6">
-            <div className="min-w-[80px] text-[13px] text-nano-gray-100/85">Steps</div>
+            <div className="min-w-[80px] text-[13px] text-nano-gray-100/85">
+              Steps
+            </div>
             <div className="flex w-full items-center gap-4">
-              <StyledSlider value={steps} onValueChange={(v) => setSteps(v[0])} />
+              <ThinSlider value={steps} onChange={(v) => setSteps(v)} />
               <span className="w-8 text-right text-[13px] text-nano-gray-100/85">
                 {steps}
               </span>
             </div>
           </div>
 
-          {/* AI labels toggle (spans full width on md) */}
+          {/* AI labels toggle */}
           <div className="md:col-span-2 flex items-center justify-between">
             <div className="text-[13px] text-nano-gray-100/85">
               AI-edited labels on generated images
@@ -98,10 +101,10 @@ export default function ProductPhotography() {
 
         {/* Action buttons */}
         <section className="mb-6 flex items-center gap-3">
-          <Button className="h-8 rounded-md bg-nano-olive-700 px-3 text-[13px] font-medium text-nano-mint hover:bg-nano-deep-900">
+          <Button className="h-8 rounded-full bg-nano-olive-700 px-3 text-[13px] font-medium text-nano-mint hover:bg-nano-deep-900">
             Auto-Scenario
           </Button>
-          <Button className="h-8 rounded-md bg-emerald-500 px-3 text-[13px] font-semibold text-black hover:bg-emerald-500/90">
+          <Button className="h-8 rounded-full bg-emerald-500 px-3 text-[13px] font-semibold text-black hover:bg-emerald-500/90">
             Generate
           </Button>
         </section>
@@ -111,7 +114,7 @@ export default function ProductPhotography() {
           <div className="mb-2 text-[13px] text-nano-gray-100/85">
             Generating Images
           </div>
-          <StyledProgress value={progress} />
+          <ThinProgress value={progress} />
         </section>
 
         {/* Gallery */}
@@ -153,40 +156,45 @@ export default function ProductPhotography() {
   );
 }
 
-/* ---------- Styled shadcn wrappers to match the mock exactly ---------- */
+/* ---------- Custom thin slider & progress (match mock exactly) ---------- */
 
-function StyledSlider({
+function ThinSlider({
   value,
-  onValueChange,
+  onChange,
 }: {
   value: number;
-  onValueChange: (v: number[]) => void;
+  onChange: (v: number) => void;
 }) {
   return (
-    <Slider
-      defaultValue={[value]}
+    <RdxSlider.Root
       value={[value]}
-      onValueChange={onValueChange}
+      onValueChange={(v) => onChange(v[0])}
+      min={0}
       max={100}
       step={1}
-      className="w-full"
+      className="relative flex w-full touch-none select-none items-center"
     >
-      {/* Tailwind overrides via :where selector in globals will style the parts,
-          but we can enforce colors with utility classes below */}
-      <div className="relative h-1.5 w-full rounded-full bg-nano-forest-800">
-        {/* progress bar effect created visually by using shadcn’s CSS variables,
-            but we’ll mirror with an overlay (handled by component styles) */}
-      </div>
-    </Slider>
+      {/* Track (deep green) */}
+      <RdxSlider.Track className="relative h-[6px] w-full grow overflow-hidden rounded-full bg-nano-forest-800">
+        {/* Filled range (white) */}
+        <RdxSlider.Range className="absolute h-full bg-white" />
+      </RdxSlider.Track>
+
+      {/* Hide thumb (keeps keyboard accessibility) */}
+      <RdxSlider.Thumb
+        aria-label="Slider handle"
+        className="block h-0 w-0 rounded-full bg-transparent outline-none ring-0"
+      />
+    </RdxSlider.Root>
   );
 }
 
-function StyledProgress({ value }: { value: number }) {
+function ThinProgress({ value }: { value: number }) {
   return (
-    <div className="relative w-full">
-      <Progress
-        value={value}
-        className="[&>div]:bg-white h-2 w-full overflow-hidden rounded-full bg-nano-forest-800"
+    <div className="relative h-[8px] w-full overflow-hidden rounded-full bg-nano-forest-800">
+      <div
+        className="absolute left-0 top-0 h-full bg-white"
+        style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
       />
     </div>
   );
