@@ -40,14 +40,14 @@ export default function NanoBananaNavbar() {
           {/* bar */}
           <div className="flex h-12 items-center gap-3 md:gap-6">
             {/* brand */}
-            <div className="flex items-center gap-2">
+            <Link href={"/"} className="flex items-center gap-2">
               <div className="flex h-6 w-6 items-center justify-center rounded-md bg-white/10">
                 <Image src={Logo} width={14} height={14} alt="logo" />
               </div>
               <span className="select-none text-sm font-semibold tracking-tight text-white/95">
                 Nano Banana Studio
               </span>
-            </div>
+            </Link>
 
             {/* desktop links */}
             <div className="hidden items-center gap-5 text-[13px] text-white/70 md:flex">
