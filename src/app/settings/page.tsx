@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -11,18 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 
 export default function SettingsPage() {
   const [platform, setPlatform] = useState("");
@@ -89,13 +80,22 @@ export default function SettingsPage() {
         <Section title="Prompt Presets">
           <Tabs defaultValue="social" className="w-full">
             <TabsList className="relative h-auto w-auto justify-start gap-8 border-b border-nano-deep-900 bg-transparent p-0">
-              <TabsTrigger value="social" className="px-0 py-2 text-[13px] font-semibold">
+              <TabsTrigger
+                value="social"
+                className="px-0 py-2 text-[13px] font-semibold"
+              >
                 Social Media
               </TabsTrigger>
-              <TabsTrigger value="marketing" className="px-0 py-2 text-[13px] font-semibold">
+              <TabsTrigger
+                value="marketing"
+                className="px-0 py-2 text-[13px] font-semibold"
+              >
                 Marketing
               </TabsTrigger>
-              <TabsTrigger value="ecom" className="px-0 py-2 text-[13px] font-semibold">
+              <TabsTrigger
+                value="ecom"
+                className="px-0 py-2 text-[13px] font-semibold"
+              >
                 E-commerce
               </TabsTrigger>
             </TabsList>
@@ -142,7 +142,10 @@ export default function SettingsPage() {
           </Row>
 
           <Row label="Theme" value="Dark">
-            <Switch defaultChecked className="data-[state=checked]:bg-emerald-500" />
+            <Switch
+              defaultChecked
+              className="data-[state=checked]:bg-emerald-500"
+            />
           </Row>
 
           <Row label="Notifications" value="Enabled">
@@ -169,9 +172,13 @@ export default function SettingsPage() {
   );
 }
 
-/* ---------- Helpers ---------- */
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="mb-8">
       <h2 className="mb-3 text-[15px] font-semibold text-nano-gray-100">

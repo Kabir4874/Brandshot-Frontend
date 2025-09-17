@@ -19,11 +19,41 @@ type ProjectRow = {
 };
 
 const DATA: ProjectRow[] = [
-  { name: "Project Alpha",  client: "Client A", tag: "Social Media",     created: "2024-01-15", generations: 120 },
-  { name: "Project Beta",   client: "Client B", tag: "Website",          created: "2024-02-20", generations: 85  },
-  { name: "Project Gamma",  client: "Client C", tag: "Email Marketing",  created: "2024-03-10", generations: 150 },
-  { name: "Project Delta",  client: "Client D", tag: "Advertising",      created: "2024-04-05", generations: 95  },
-  { name: "Project Epsilon",client: "Client E", tag: "Content Creation", created: "2024-05-01", generations: 110 },
+  {
+    name: "Project Alpha",
+    client: "Client A",
+    tag: "Social Media",
+    created: "2024-01-15",
+    generations: 120,
+  },
+  {
+    name: "Project Beta",
+    client: "Client B",
+    tag: "Website",
+    created: "2024-02-20",
+    generations: 85,
+  },
+  {
+    name: "Project Gamma",
+    client: "Client C",
+    tag: "Email Marketing",
+    created: "2024-03-10",
+    generations: 150,
+  },
+  {
+    name: "Project Delta",
+    client: "Client D",
+    tag: "Advertising",
+    created: "2024-04-05",
+    generations: 95,
+  },
+  {
+    name: "Project Epsilon",
+    client: "Client E",
+    tag: "Content Creation",
+    created: "2024-05-01",
+    generations: 110,
+  },
 ];
 
 export default function ProjectsTable() {
@@ -32,7 +62,6 @@ export default function ProjectsTable() {
       <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-10">
         <h2 className="mb-4 text-xl font-semibold tracking-tight">Projects</h2>
 
-        {/* Table container w/ rounded corners + subtle border to match mock */}
         <div className="overflow-hidden rounded-lg ring-1 ring-nano-deep-900/80">
           <Table className="[&_th]:text-left">
             <TableHeader className="bg-transparent">
@@ -60,7 +89,11 @@ export default function ProjectsTable() {
 
             <TableBody>
               {DATA.map((row, idx) => (
-                <ProjectsRow key={row.name} row={row} isLast={idx === DATA.length - 1} />
+                <ProjectsRow
+                  key={row.name}
+                  row={row}
+                  isLast={idx === DATA.length - 1}
+                />
               ))}
             </TableBody>
           </Table>
@@ -70,21 +103,11 @@ export default function ProjectsTable() {
   );
 }
 
-function ProjectsRow({
-  row,
-  isLast,
-}: {
-  row: ProjectRow;
-  isLast?: boolean;
-}) {
+function ProjectsRow({ row, isLast }: { row: ProjectRow; isLast?: boolean }) {
   return (
     <TableRow
-      className={cn(
-        "border-0",
-        !isLast && "border-b border-nano-deep-900/80"
-      )}
+      className={cn("border-0", !isLast && "border-b border-nano-deep-900/80")}
     >
-      {/* match generous row height + left padding */}
       <TableCell className="h-[76px] px-6 align-middle text-[14px] text-white">
         {row.name}
       </TableCell>

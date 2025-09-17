@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import * as RdxSlider from "@radix-ui/react-slider";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import * as RdxSlider from "@radix-ui/react-slider";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function ProductPhotography() {
   const [prompt, setPrompt] = useState("");
@@ -130,8 +131,7 @@ export default function ProductPhotography() {
                 key={src}
                 className="aspect-[4/3] overflow-hidden rounded-lg bg-nano-olive-700 ring-1 ring-nano-forest-800"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={src}
                   alt="Generated product"
                   className="h-full w-full object-cover"
@@ -143,8 +143,7 @@ export default function ProductPhotography() {
           {/* second row left image */}
           <div className="mt-4 grid grid-cols-1 max-w-full sm:max-w-[220px]">
             <figure className="aspect-[4/3] overflow-hidden rounded-lg bg-nano-olive-700 ring-1 ring-nano-forest-800">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={IMAGES[5]}
                 alt="Generated product"
                 className="h-full w-full object-cover"
@@ -156,8 +155,6 @@ export default function ProductPhotography() {
     </main>
   );
 }
-
-/* ---------- Custom thin slider & progress (match mock exactly) ---------- */
 
 function ThinSlider({
   value,
@@ -175,13 +172,10 @@ function ThinSlider({
       step={1}
       className="relative flex w-full touch-none select-none items-center"
     >
-      {/* Track (deep green) */}
       <RdxSlider.Track className="relative h-[6px] w-full grow overflow-hidden rounded-full bg-nano-forest-800">
-        {/* Filled range (white) */}
         <RdxSlider.Range className="absolute h-full bg-white" />
       </RdxSlider.Track>
 
-      {/* Hide thumb (keeps keyboard accessibility) */}
       <RdxSlider.Thumb
         aria-label="Slider handle"
         className="block h-0 w-0 rounded-full bg-transparent outline-none ring-0"

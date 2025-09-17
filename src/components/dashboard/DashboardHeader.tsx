@@ -1,8 +1,6 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -13,23 +11,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, ChevronDown } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ChevronDown, Search } from "lucide-react";
+import React from "react";
 
-// Local types
 export type DateSort = "newest" | "oldest" | "7d" | "30d";
 
-const TAG_OPTIONS = ["All", "Design", "Research", "Development", "Marketing"] as const;
+const TAG_OPTIONS = [
+  "All",
+  "Design",
+  "Research",
+  "Development",
+  "Marketing",
+] as const;
 
 export default function DashboardHeader() {
-  // Local state only (no props)
   const [query, setQuery] = React.useState("");
   const [tags, setTags] = React.useState<string[]>(["All"]);
   const [dateSort, setDateSort] = React.useState<DateSort>("newest");
 
-  // Helper to toggle multi-select tags; "All" behaves as reset.
   const toggleTag = (t: string) => {
     setTags((prev) => {
-      if (t === "All") return ["All"]; // reset
+      if (t === "All") return ["All"];
       const next = prev.includes(t)
         ? prev.filter((x) => x !== t && x !== "All")
         : [...prev.filter((x) => x !== "All"), t];
@@ -42,7 +45,9 @@ export default function DashboardHeader() {
       <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-4">
         {/* Top bar: title + small pill CTA */}
         <div className="mb-3 flex items-center justify-between">
-          <h1 className="text-3xl font-extrabold leading-none tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-extrabold leading-none tracking-tight">
+            Dashboard
+          </h1>
 
           <Button
             size="sm"
@@ -52,7 +57,6 @@ export default function DashboardHeader() {
           </Button>
         </div>
 
-        {/* Search bar (wide, rounded, deep green) */}
         <div className="relative">
           <Search
             aria-hidden
@@ -69,7 +73,6 @@ export default function DashboardHeader() {
 
         {/* Filter pills row */}
         <div className="mt-3 flex flex-wrap gap-3">
-          {/* Project Tags dropdown (multi-select) */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -102,7 +105,6 @@ export default function DashboardHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Creation Date dropdown (single-select) */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

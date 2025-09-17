@@ -6,19 +6,14 @@ import { Slider } from "@/components/ui/slider";
 import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
 
-/* -------------------------------- Page -------------------------------- */
-
 export default function ImageEditingPage() {
-  // object URLs for previews (null until uploaded)
   const [img1, setImg1] = useState<string | null>(null);
   const [img2, setImg2] = useState<string | null>(null);
   const [compare, setCompare] = useState<number>(50);
 
-  // Inputs
   const fileA = useRef<HTMLInputElement | null>(null);
   const fileB = useRef<HTMLInputElement | null>(null);
 
-  // Keep last objectURL to revoke
   const lastUrlA = useRef<string | null>(null);
   const lastUrlB = useRef<string | null>(null);
 
@@ -31,7 +26,7 @@ export default function ImageEditingPage() {
       setUrl: (v: string | null) => void,
       lastRef: React.MutableRefObject<string | null>
     ) => {
-      if (!file.type.startsWith("image/")) return; // guard
+      if (!file.type.startsWith("image/")) return;
       const url = URL.createObjectURL(file);
       if (lastRef.current) URL.revokeObjectURL(lastRef.current);
       lastRef.current = url;
@@ -91,7 +86,6 @@ export default function ImageEditingPage() {
           </div>
         </section>
 
-        {/* Preview (only when at least one image selected) */}
         {hasAnyPreview && (
           <section className="mt-6">
             <h2 className="mb-2 text-[13px] font-semibold text-nano-gray-100">
@@ -105,7 +99,6 @@ export default function ImageEditingPage() {
           </section>
         )}
 
-        {/* big vertical spacing like mock */}
         <div className="mt-16" />
 
         {/* Editing Actions */}
@@ -114,7 +107,6 @@ export default function ImageEditingPage() {
             Editing Actions
           </h2>
 
-          {/* wrap on mobile, same row on desktop */}
           <div className="flex flex-wrap items-center gap-3 md:gap-4">
             <ButtonPill label="Relight" />
             <ButtonPill label="Replace Background" />
@@ -167,7 +159,7 @@ export default function ImageEditingPage() {
         onChange={(e) => {
           const f = e.target.files?.[0];
           if (f) setPreviewUrl(f, setImg1, lastUrlA);
-          e.currentTarget.value = ""; // allow re-select same file
+          e.currentTarget.value = "";
         }}
       />
       <input
@@ -184,8 +176,6 @@ export default function ImageEditingPage() {
     </main>
   );
 }
-
-/* ----------------------------- Subcomponents ---------------------------- */
 
 function UploadField({
   label,
@@ -227,7 +217,6 @@ function UploadField({
           if (file) onDropFile(file);
         }}
         className={[
-          // Full width on small, fixed width on desktop (keeps original look)
           "flex h-10 w-full md:w-[420px] items-center justify-between rounded-md border px-3",
           "bg-nano-olive-700 border-nano-forest-800 text-nano-gray-100",
           "hover:bg-nano-olive-700/95",
@@ -235,7 +224,6 @@ function UploadField({
         ].join(" ")}
         aria-label={`${label} picker`}
       >
-        {/* two-line helper (stacked) */}
         <div className="leading-tight">
           <div className="text-[13px]">Click</div>
           <div className="-mt-0.5 text-[12px] text-nano-gray-100/70">
@@ -264,7 +252,6 @@ function UploadField({
   );
 }
 
-/** Framed photo preview to match the screenshot (mat + light frame + slight shadow) */
 function FramedPreview({ src }: { src: string }) {
   return (
     <div
@@ -300,8 +287,6 @@ function ButtonPill({ label }: { label: string }) {
   );
 }
 
-/* --------------------------- Thin Compare Bar --------------------------- */
-/** Thin, left→right bar with white fill and NO visible thumb (flat look like the mock) */
 function ThinBar({
   value,
   onChange,
@@ -311,7 +296,6 @@ function ThinBar({
 }) {
   return (
     <div className="relative w-full">
-      {/* Visual track (custom) */}
       <div className="relative h-[6px] w-full overflow-hidden rounded-full bg-nano-forest-800">
         <div
           className="absolute left-0 top-0 h-full rounded-full bg-white"
@@ -319,7 +303,6 @@ function ThinBar({
         />
       </div>
 
-      {/* Invisible interactive layer to keep keyboard/mouse control */}
       <Slider
         aria-label="Comparison"
         value={[value]}

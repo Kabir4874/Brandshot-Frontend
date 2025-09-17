@@ -1,17 +1,17 @@
 "use client";
-import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Menu, X } from "lucide-react";
-import Logo from "../assets/icons/logo.png";
+import { Menu, Search, X } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import Download from "../assets/icons/download.png";
+import Logo from "../assets/icons/logo.png";
 
 export default function NanoBananaNavbar() {
   const [open, setOpen] = useState(false);
 
-  // Close on ESC
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
@@ -20,7 +20,6 @@ export default function NanoBananaNavbar() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Prevent background scroll when mobile menu is open
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -104,7 +103,7 @@ export default function NanoBananaNavbar() {
                 </AvatarFallback>
               </Avatar>
 
-              {/* mobile hamburger (keeps mobile design minimal) */}
+              {/* mobile hamburger  */}
               <button
                 type="button"
                 aria-label="Open menu"
@@ -112,20 +111,24 @@ export default function NanoBananaNavbar() {
                 className="inline-flex items-center justify-center rounded-md p-2 text-white md:hidden"
                 onClick={() => setOpen((v) => !v)}
               >
-                {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {open ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
               </button>
             </div>
           </div>
         </nav>
       </div>
 
-      {/* Spacer so content doesn’t sit under the fixed nav */}
       <div className="h-[56px]" />
 
-      {/* Mobile menu: slide-down panel (separate menu) */}
       <div
         className={`fixed inset-x-0 top-[56px] z-40 origin-top transform bg-nano-deep-950/98 backdrop-blur-sm transition-all duration-200 md:hidden ${
-          open ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0 pointer-events-none"
+          open
+            ? "scale-y-100 opacity-100"
+            : "scale-y-0 opacity-0 pointer-events-none"
         }`}
       >
         <div className="mx-auto max-w-[1400px] px-4 pb-4 pt-3">
@@ -144,41 +147,41 @@ export default function NanoBananaNavbar() {
 
           {/* links */}
           <nav className="space-y-2 text-[14px]">
-            <a
-              href="#"
+            <Link
+              href="/"
               className="block rounded-md px-2 py-2 text-white/80 hover:bg-white/5 hover:text-white"
               onClick={() => setOpen(false)}
             >
               Dashboard
-            </a>
-            <a
+            </Link>
+            <Link
               href="#"
               className="block rounded-md px-2 py-2 text-white/80 hover:bg-white/5 hover:text-white"
               onClick={() => setOpen(false)}
             >
               Generations
-            </a>
-            <a
+            </Link>
+            <Link
               href="#"
               className="block rounded-md px-2 py-2 text-white/80 hover:bg-white/5 hover:text-white"
               onClick={() => setOpen(false)}
             >
               Templates
-            </a>
-            <a
+            </Link>
+            <Link
               href="#"
               className="block rounded-md px-2 py-2 text-white/80 hover:bg-white/5 hover:text-white"
               onClick={() => setOpen(false)}
             >
               Assets
-            </a>
-            <a
+            </Link>
+            <Link
               href="#"
               className="block rounded-md px-2 py-2 text-white/80 hover:bg-white/5 hover:text-white"
               onClick={() => setOpen(false)}
             >
               Settings
-            </a>
+            </Link>
           </nav>
 
           {/* CTA + avatar (mobile) */}
@@ -201,7 +204,6 @@ export default function NanoBananaNavbar() {
         </div>
       </div>
 
-      {/* Click-away overlay for mobile menu */}
       {open && (
         <button
           aria-label="Close menu overlay"

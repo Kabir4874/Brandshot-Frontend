@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
+import Image from "next/image";
+import React from "react";
 
 type Mode = "all" | "t2i" | "i2i";
 
@@ -57,22 +58,29 @@ export default function ProjectGalleryPage() {
 
         {/* Filters + actions */}
         <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          {/* Pills: horizontal scroll on small, keep gap on desktop */}
           <div className="-mx-4 overflow-x-auto px-4 md:mx-0 md:overflow-visible md:px-0">
             <div className="flex w-max items-center gap-2 md:gap-3">
-              <FilterPill active={mode === "all"} onClick={() => setMode("all")}>
+              <FilterPill
+                active={mode === "all"}
+                onClick={() => setMode("all")}
+              >
                 All
               </FilterPill>
-              <FilterPill active={mode === "t2i"} onClick={() => setMode("t2i")}>
+              <FilterPill
+                active={mode === "t2i"}
+                onClick={() => setMode("t2i")}
+              >
                 Text to Image
               </FilterPill>
-              <FilterPill active={mode === "i2i"} onClick={() => setMode("i2i")}>
+              <FilterPill
+                active={mode === "i2i"}
+                onClick={() => setMode("i2i")}
+              >
                 Image to Image
               </FilterPill>
             </div>
           </div>
 
-          {/* Actions: stack or split evenly on small, right-aligned on md+ */}
           <div className="grid grid-cols-2 gap-2 md:flex md:items-center md:gap-2 md:justify-end">
             <Button className="h-8 rounded-md bg-nano-olive-700 px-3 text-[13px] font-medium text-nano-mint hover:bg-nano-deep-900 w-full md:w-auto">
               Quick Compare
@@ -91,8 +99,7 @@ export default function ProjectGalleryPage() {
                 key={i}
                 className="aspect-square overflow-hidden rounded-md bg-nano-olive-700 ring-1 ring-nano-forest-800"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={src}
                   alt={`preview ${i + 1}`}
                   className="h-full w-full object-cover"
@@ -108,7 +115,6 @@ export default function ProjectGalleryPage() {
             Image Prompts
           </h2>
 
-          {/* two-column rows with subtle separators */}
           <div className="grid grid-cols-1 gap-y-5 md:grid-cols-2 md:gap-x-8">
             {Array.from({ length: 12 }).map((_, idx) => (
               <div key={idx} className="border-b border-nano-deep-900 pb-4">
@@ -126,8 +132,6 @@ export default function ProjectGalleryPage() {
     </main>
   );
 }
-
-/* ---------- UI Bits ---------- */
 
 function FilterPill({
   active,
