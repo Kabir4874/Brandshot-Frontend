@@ -51,21 +51,27 @@ export default function NanoBananaNavbar() {
 
             {/* desktop links */}
             <div className="hidden items-center gap-5 text-[13px] text-white/70 md:flex">
-              <a href="#" className="transition-colors hover:text-white">
+              <Link href="/" className="transition-colors hover:text-white">
                 Dashboard
-              </a>
-              <a href="#" className="transition-colors hover:text-white">
+              </Link>
+              <Link
+                href="/photography"
+                className="transition-colors hover:text-white"
+              >
                 Generations
-              </a>
-              <a href="#" className="transition-colors hover:text-white">
+              </Link>
+              <Link href="#" className="transition-colors hover:text-white">
                 Templates
-              </a>
-              <a href="#" className="transition-colors hover:text-white">
+              </Link>
+              <Link href="#" className="transition-colors hover:text-white">
                 Assets
-              </a>
-              <a href="#" className="transition-colors hover:text-white">
+              </Link>
+              <Link
+                href="/settings"
+                className="transition-colors hover:text-white"
+              >
                 Settings
-              </a>
+              </Link>
             </div>
 
             <div className="ml-auto flex items-center gap-3 md:gap-4">
