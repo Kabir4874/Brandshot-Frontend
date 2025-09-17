@@ -155,7 +155,7 @@ export default function NanoBananaNavbar() {
               Dashboard
             </Link>
             <Link
-              href="#"
+              href="/photography"
               className="block rounded-md px-2 py-2 text-white/80 hover:bg-white/5 hover:text-white"
               onClick={() => setOpen(false)}
             >
@@ -176,7 +176,7 @@ export default function NanoBananaNavbar() {
               Assets
             </Link>
             <Link
-              href="#"
+              href="/settings"
               className="block rounded-md px-2 py-2 text-white/80 hover:bg-white/5 hover:text-white"
               onClick={() => setOpen(false)}
             >
