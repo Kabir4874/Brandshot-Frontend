@@ -1,45 +1,118 @@
 "use client";
 
+import { getProject } from "@/api/project";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  LocalGeneration,
+  ProjectImageFlat,
+  listGenerations,
+  listImagesByProject,
+} from "@/lib/localImages";
 import { cn } from "@/lib/utils";
+import { Project } from "@/types/project";
 import { Search } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import { useParams } from "next/navigation";
+import * as React from "react";
 
 type Mode = "all" | "t2i" | "i2i";
 
-const IMAGES = [
-  "https://images.unsplash.com/photo-1603190287605-e6ade32fa852?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1526948531399-320e7e40f0ca?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1585386959984-a4155223168f?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1604882737207-8f21c4b0afdf?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1563298723-dcfebaa392e3?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1520975940205-cf9f4f8a1f2a?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1616628188466-8c2a6fb5d9df?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1556228724-4af21a8179af?q=80&w=1200&auto=format&fit=crop",
-];
-
 export default function ProjectGalleryPage() {
+  const params = useParams<{ id: string }>();
+  const projectId = params?.id;
+
+  const [project, setProject] = React.useState<Project | null>(null);
+  const [gens, setGens] = React.useState<LocalGeneration[]>([]);
+  const [images, setImages] = React.useState<ProjectImageFlat[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [err, setErr] = React.useState<string | null>(null);
+
+  // UI filters
   const [query, setQuery] = React.useState("");
   const [mode, setMode] = React.useState<Mode>("all");
+
+  // initial load + a simple "storage change" refresh
+  React.useEffect(() => {
+    if (!projectId) return;
+    setLoading(true);
+    try {
+      getProject(projectId).then((p) => setProject(p));
+      setGens(listGenerations(projectId));
+      setImages(listImagesByProject(projectId));
+      setErr(null);
+    } catch {
+      setErr("Failed to load project.");
+    } finally {
+      setLoading(false);
+    }
+  }, [projectId]);
+
+  // if some other view saves to localStorage, allow manual refresh with a custom event
+  React.useEffect(() => {
+    function onRefresh(e: Event) {
+      const id = (e as CustomEvent<{ projectId: string }>).detail?.projectId;
+      if (!projectId || id !== projectId) return;
+      setGens(listGenerations(projectId));
+      setImages(listImagesByProject(projectId));
+    }
+    window.addEventListener("nb:project:refresh", onRefresh as EventListener);
+    return () =>
+      window.removeEventListener(
+        "nb:project:refresh",
+        onRefresh as EventListener
+      );
+  }, [projectId]);
+
+  // filtering (images grid uses flat images)
+  const filteredImages = React.useMemo(() => {
+    let arr = images.slice();
+    if (mode !== "all") arr = arr.filter((i) => i.mode === mode);
+    const q = query.trim().toLowerCase();
+    if (q) {
+      arr = arr.filter(
+        (i) =>
+          i.prompt.toLowerCase().includes(q) ||
+          project?.name?.toLowerCase().includes(q) ||
+          project?.client?.toLowerCase().includes(q)
+      );
+    }
+    return arr;
+  }, [images, mode, query, project]);
+
+  // prompts list (grouped by generation)
+  const filteredGens = React.useMemo(() => {
+    let arr = gens.slice();
+    if (mode !== "all") arr = arr.filter((g) => g.mode === mode);
+    const q = query.trim().toLowerCase();
+    if (q) {
+      arr = arr.filter((g) => g.prompt.toLowerCase().includes(q));
+    }
+    return arr;
+  }, [gens, mode, query]);
 
   return (
     <main className="w-full bg-nano-deep-950 text-nano-white">
       <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-14">
-        {/* Title + meta */}
+        {/* Header */}
         <header className="mb-4">
           <h1 className="text-2xl md:text-3xl font-extrabold leading-none tracking-tight">
-            Project: Marketing Campaign
+            {project ? `Project: ${project.name}` : "Project"}
           </h1>
           <p className="mt-1 text-[13px] text-nano-gray-100/85">
-            Last updated 2 days ago
+            {project
+              ? `Last updated ${timeAgo(project.updatedAt)}`
+              : loading
+              ? "Loading…"
+              : "—"}
           </p>
         </header>
+
+        {err && (
+          <div className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-[13px] text-red-200">
+            {err}
+          </div>
+        )}
 
         {/* Search */}
         <div className="relative mb-3 w-full">
@@ -93,44 +166,87 @@ export default function ProjectGalleryPage() {
 
         {/* Image grid */}
         <section className="mb-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
-            {IMAGES.slice(0, 12).map((src, i) => (
-              <figure
-                key={i}
-                className="aspect-square overflow-hidden rounded-md bg-nano-olive-700 ring-1 ring-nano-forest-800"
-              >
-                <Image
-                  src={src}
-                  alt={`preview ${i + 1}`}
-                  className="h-full w-full object-cover"
-                />
-              </figure>
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-[13px] text-nano-gray-100/85">Loading…</div>
+          ) : filteredImages.length ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
+              {filteredImages.slice(0, 12).map((it, i) => (
+                <figure
+                  key={`${it.genId}-${it.image.id}`}
+                  className="aspect-square overflow-hidden rounded-md bg-nano-olive-700 ring-1 ring-nano-forest-800"
+                  title={it.prompt}
+                >
+                  <Image
+                    src={it.image.thumbUrl || it.image.dataUrl}
+                    alt={`preview ${i + 1}`}
+                    width={500}
+                    height={500}
+                    className="h-full w-full object-cover"
+                    unoptimized
+                  />
+                </figure>
+              ))}
+            </div>
+          ) : (
+            <div className="text-[13px] text-nano-gray-100/85">
+              No images yet.
+            </div>
+          )}
         </section>
 
-        {/* Prompts list */}
+        {/* Prompts list (each generation with count of images) */}
         <section>
           <h2 className="mb-3 text-[15px] font-semibold text-nano-gray-100">
             Image Prompts
           </h2>
 
-          <div className="grid grid-cols-1 gap-y-5 md:grid-cols-2 md:gap-x-8">
-            {Array.from({ length: 12 }).map((_, idx) => (
-              <div key={idx} className="border-b border-nano-deep-900 pb-4">
-                <div className="mb-1 text-[11px] uppercase tracking-wide text-nano-gray-100/70">
-                  Image {idx + 1}
+          {loading ? (
+            <div className="text-[13px] text-nano-gray-100/85">Loading…</div>
+          ) : filteredGens.length ? (
+            <div className="grid grid-cols-1 gap-y-5 md:grid-cols-2 md:gap-x-8">
+              {filteredGens.slice(0, 24).map((g) => (
+                <div key={g.id} className="border-b border-nano-deep-900 pb-4">
+                  <div className="mb-1 flex items-center gap-2 text-[11px] uppercase tracking-wide text-nano-gray-100/70">
+                    <span>{labelForMode(g.mode)}</span>
+                    <span>•</span>
+                    <span>{new Date(g.createdAt).toLocaleString()}</span>
+                    <span>•</span>
+                    <span>
+                      {g.images.length} img{g.images.length !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <div className="text-[13px] text-nano-gray-100/90">
+                    {g.prompt}
+                  </div>
                 </div>
-                <div className="text-[13px] text-nano-gray-100/90">
-                  Prompt for image {idx + 1}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-[13px] text-nano-gray-100/85">
+              No prompts yet.
+            </div>
+          )}
         </section>
       </div>
     </main>
   );
+}
+
+/* ---------------- helpers / tiny UI bits ---------------- */
+
+function labelForMode(mode: "t2i" | "i2i") {
+  return mode === "i2i" ? "Image to Image" : "Text to Image";
+}
+
+function timeAgo(ts: number) {
+  const delta = Date.now() - ts;
+  const mins = Math.floor(delta / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} min ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs} hr${hrs > 1 ? "s" : ""} ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days} day${days > 1 ? "s" : ""} ago`;
 }
 
 function FilterPill({
