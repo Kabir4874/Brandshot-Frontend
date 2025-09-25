@@ -22,7 +22,7 @@
 7. Upscale Image(optional)
 
 
-## Generation Two(Generating Product Photography)
+## Generation Two(Product Photography)
 ###  Data Fields Needed 
 1. Photo
 2. Upscale Image(optional)

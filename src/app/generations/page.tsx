@@ -2,199 +2,652 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import * as RdxSlider from "@radix-ui/react-slider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 export default function Generations() {
-  const [prompt, setPrompt] = useState("");
-  const [seed, setSeed] = useState(50);
-  const [steps, setSteps] = useState(25);
-  const [aiLabels, setAiLabels] = useState(true);
-  const [progress, setProgress] = useState(42);
+  const [activeTab, setActiveTab] = useState("ad-creative");
+  const [isLoading, setIsLoading] = useState(false);
+  const [output, setOutput] = useState<string | null>(null);
 
-  useEffect(() => {
-    const t = setInterval(() => {
-      setProgress((p) => (p >= 100 ? 42 : p + 1));
-    }, 120);
-    return () => clearInterval(t);
-  }, []);
+  // Form states for each tab
+  const [adCreativeForm, setAdCreativeForm] = useState({
+    industry: "",
+    adPlatform: "",
+    campaignObjective: "",
+    targetAudience: "",
+    keyMessages: "",
+    brandGuidelines: "",
+    upscaleImage: "no"
+  });
 
-  const IMAGES = [
-    "https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1585386959984-a4155223168f?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1619158401201-c5a3a089b8f1?q=80&w=1200&auto=format&fit=crop",
-  ];
+  const [productPhotographyForm, setProductPhotographyForm] = useState({
+    photo: null as File | null,
+    upscaleImage: "no"
+  });
+
+  const [productPhotographyModelForm, setProductPhotographyModelForm] = useState({
+    photo: null as File | null,
+    upscaleImage: "no"
+  });
+
+  const [generatingLogoForm, setGeneratingLogoForm] = useState({
+    brandName: "",
+    industry: "",
+    adPlatform: "",
+    campaignObjective: "",
+    targetAudience: "",
+    keyMessages: "",
+    brandGuidelines: "",
+    upscaleImage: "no"
+  });
+
+  const [recreatingLogoForm, setRecreatingLogoForm] = useState({
+    photo: null as File | null,
+    keyMessages: "",
+    upscaleImage: "no"
+  });
+
+  const handleSubmit = async (formData: any, hasImage: boolean = false) => {
+    setIsLoading(true);
+    setOutput(null);
+
+    try {
+      let dataToSend: any;
+      
+      if (hasImage) {
+        dataToSend = new FormData();
+        Object.keys(formData).forEach(key => {
+          if (key === 'photo' && formData[key]) {
+            dataToSend.append(key, formData[key]);
+          } else {
+            dataToSend.append(key, formData[key]);
+          }
+        });
+      } else {
+        dataToSend = JSON.stringify(formData);
+      }
+
+      const response = await fetch('https://developer.shourav.com/start', {
+        method: 'POST',
+        headers: hasImage ? {} : { 'Content-Type': 'application/json' },
+        body: hasImage ? dataToSend : dataToSend
+      });
+
+      const result = await response.json();
+      setOutput(result.data || result);
+    } catch (error) {
+      setOutput('Error generating content. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setForm: Function) => {
+    const file = e.target.files?.[0] || null;
+    setForm((prev: any) => ({ ...prev, photo: file }));
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, setForm: Function) => {
+    const { name, value } = e.target;
+    setForm((prev: any) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (value: string, field: string, setForm: Function) => {
+    setForm((prev: any) => ({ ...prev, [field]: value }));
+  };
 
   return (
-    <main className="w-full bg-nano-deep-950 text-nano-white">
+    <main className="w-full bg-nano-deep-950 text-nano-white min-h-full">
       <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-16">
         {/* --------------Title + subtitle-------------- */}
         <header className="mb-5">
           <h1 className="text-2xl md:text-3xl font-extrabold leading-none tracking-tight">
-            Product Photography Generations
+            AI Content Generations
           </h1>
           <p className="mt-1 text-[13px] text-nano-gray-100/85">
-            Generate high-quality product images for your marketing campaigns.
+            Generate high-quality content for your business.
           </p>
         </header>
 
-        {/* --------------Prompt areas-------------- */}
-        <section className="mb-6">
-          <Textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder=" "
-            aria-label="Main prompt"
-            className="mb-3 h-36 w-full md:w-[620px] max-w-full resize-none rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-transparent focus-visible:ring-0"
-          />
-          <Input
-            placeholder=" "
-            aria-label="Short prompt"
-            className="h-9 w-full md:w-[420px] max-w-full rounded-md border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-transparent focus-visible:ring-0"
-          />
-        </section>
+        {/* ----------------Tabs Section------------- */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-2 mb-8">
+            <TabsTrigger value="ad-creative" className="text-xs md:text-sm">Ad Creative</TabsTrigger>
+            <TabsTrigger value="product-photography" className="text-xs md:text-sm">Product Photography</TabsTrigger>
+            <TabsTrigger value="product-photography-model" className="text-xs md:text-sm">Product Photography with Model</TabsTrigger>
+            <TabsTrigger value="generating-logo" className="text-xs md:text-sm">Generating Logo</TabsTrigger>
+            <TabsTrigger value="recreating-logo" className="text-xs md:text-sm">Recreating Logo</TabsTrigger>
+          </TabsList>
 
-        {/* --------------Controls grid-------------- */}
-        <section className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-2">
-          {/* --------------Seed slider + value-------------- */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-2">
-            <div className="sm:min-w-[80px] text-[13px] text-nano-gray-100/85">
-              Seed
+          {/* Ad Creative Tab */}
+          <TabsContent value="ad-creative" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Side - Form */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Ad Creative Generation</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="industry">Your Industry</Label>
+                    <Select onValueChange={(value) => handleSelectChange(value, "industry", setAdCreativeForm)}>
+                      <SelectTrigger className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                        <SelectValue placeholder="Select your industry" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="retail">Retail</SelectItem>
+                        <SelectItem value="finance">Finance</SelectItem>
+                        <SelectItem value="healthcare">Healthcare</SelectItem>
+                        <SelectItem value="technology">Technology</SelectItem>
+                        <SelectItem value="education">Education</SelectItem>
+                        <SelectItem value="food-beverage">Food & Beverage</SelectItem>
+                        <SelectItem value="travel-tourism">Travel & Tourism</SelectItem>
+                        <SelectItem value="automotive">Automotive</SelectItem>
+                        <SelectItem value="real-estate">Real Estate</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="adPlatform">Ad Platform</Label>
+                    <Select onValueChange={(value) => handleSelectChange(value, "adPlatform", setAdCreativeForm)}>
+                      <SelectTrigger className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                        <SelectValue placeholder="Select ad platform" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="facebook">Facebook</SelectItem>
+                        <SelectItem value="instagram">Instagram</SelectItem>
+                        <SelectItem value="linkedin">LinkedIn</SelectItem>
+                        <SelectItem value="google-ads">Google Ads</SelectItem>
+                        <SelectItem value="twitter">Twitter/X</SelectItem>
+                        <SelectItem value="youtube">YouTube</SelectItem>
+                        <SelectItem value="tiktok">TikTok</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="campaignObjective">Campaign Objective</Label>
+                    <Select onValueChange={(value) => handleSelectChange(value, "campaignObjective", setAdCreativeForm)}>
+                      <SelectTrigger className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                        <SelectValue placeholder="Select campaign objective" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="brand-awareness">Brand Awareness</SelectItem>
+                        <SelectItem value="consideration">Consideration</SelectItem>
+                        <SelectItem value="conversion">Conversion</SelectItem>
+                        <SelectItem value="engagement">Engagement</SelectItem>
+                        <SelectItem value="traffic">Traffic</SelectItem>
+                        <SelectItem value="app-installs">App Installs</SelectItem>
+                        <SelectItem value="lead-generation">Lead Generation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="targetAudience">Target Audience</Label>
+                    <Textarea
+                      name="targetAudience"
+                      placeholder="Describe your target audience demographics, interests, and behaviors..."
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                      onChange={(e) => handleInputChange(e, setAdCreativeForm)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="keyMessages">Key Messages</Label>
+                    <Textarea
+                      name="keyMessages"
+                      placeholder="List the main points you want to communicate in your ad..."
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                      onChange={(e) => handleInputChange(e, setAdCreativeForm)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="brandGuidelines">Brand Guidelines</Label>
+                    <Textarea
+                      name="brandGuidelines"
+                      placeholder="Include any brand colors, tone of voice, restrictions, or specific requirements..."
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                      onChange={(e) => handleInputChange(e, setAdCreativeForm)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">Upscale Image</Label>
+                    <RadioGroup 
+                      value={adCreativeForm.upscaleImage} 
+                      onValueChange={(value) => handleSelectChange(value, "upscaleImage", setAdCreativeForm)}
+                      className="flex space-x-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="no" id="upscale-no" />
+                        <Label htmlFor="upscale-no">No</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="yes" id="upscale-yes" />
+                        <Label htmlFor="upscale-yes">Yes</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <Button 
+                    onClick={() => handleSubmit(adCreativeForm, false)}
+                    disabled={isLoading}
+                    className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
+                  >
+                    {isLoading ? "Generating..." : "Generate Ad Creative"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Side - Output */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Generated Output</h3>
+                <div className="border-2 border-dashed border-nano-forest-800 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
+                  {isLoading ? (
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-nano-gray-100">Generating content...</p>
+                    </div>
+                  ) : output ? (
+                    <div className="w-full">
+                      {typeof output === 'string' && output.startsWith('http') ? (
+                        <Image src={output} alt="Generated content" width={500} height={500} className="w-full h-auto rounded" />
+                      ) : (
+                        <pre className="whitespace-pre-wrap text-sm">{output}</pre>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-nano-gray-100 text-center">Your generated content will appear here</p>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="flex w-full items-center gap-3">
-              <ThinSlider value={seed} onChange={(v) => setSeed(v)} />
-              <span className="w-10 text-right text-[13px] text-nano-gray-100/85">
-                {seed}
-              </span>
+          </TabsContent>
+
+          {/* Product Photography Tab */}
+          <TabsContent value="product-photography" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Side - Form */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Product Photography</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="photo">Product Photo</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(e, setProductPhotographyForm)}
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">Upscale Image</Label>
+                    <RadioGroup 
+                      value={productPhotographyForm.upscaleImage} 
+                      onValueChange={(value) => handleSelectChange(value, "upscaleImage", setProductPhotographyForm)}
+                      className="flex space-x-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="no" id="photo-upscale-no" />
+                        <Label htmlFor="photo-upscale-no">No</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="yes" id="photo-upscale-yes" />
+                        <Label htmlFor="photo-upscale-yes">Yes</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <Button 
+                    onClick={() => handleSubmit(productPhotographyForm, true)}
+                    disabled={isLoading || !productPhotographyForm.photo}
+                    className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
+                  >
+                    {isLoading ? "Generating..." : "Generate Product Photography"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Side - Output */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Generated Output</h3>
+                <div className="border-2 border-dashed border-nano-forest-800 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
+                  {isLoading ? (
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-nano-gray-100">Generating content...</p>
+                    </div>
+                  ) : output ? (
+                    <div className="w-full">
+                      {typeof output === 'string' && output.startsWith('http') ? (
+                        <Image src={output} alt="Generated content" width={500} height={500} className="w-full h-auto rounded" />
+                      ) : (
+                        <pre className="whitespace-pre-wrap text-sm">{output}</pre>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-nano-gray-100 text-center">Your generated content will appear here</p>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
+          </TabsContent>
 
-          {/* --------------Steps slider + value-------------- */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-2">
-            <div className="sm:min-w-[80px] text-[13px] text-nano-gray-100/85">
-              Steps
+          {/* Product Photography with Model Tab */}
+          <TabsContent value="product-photography-model" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Side - Form */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Product Photography with Model</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="photo">Product Photo with Model</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(e, setProductPhotographyModelForm)}
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">Upscale Image</Label>
+                    <RadioGroup 
+                      value={productPhotographyModelForm.upscaleImage} 
+                      onValueChange={(value) => handleSelectChange(value, "upscaleImage", setProductPhotographyModelForm)}
+                      className="flex space-x-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="no" id="model-upscale-no" />
+                        <Label htmlFor="model-upscale-no">No</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="yes" id="model-upscale-yes" />
+                        <Label htmlFor="model-upscale-yes">Yes</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <Button 
+                    onClick={() => handleSubmit(productPhotographyModelForm, true)}
+                    disabled={isLoading || !productPhotographyModelForm.photo}
+                    className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
+                  >
+                    {isLoading ? "Generating..." : "Generate with Model"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Side - Output */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Generated Output</h3>
+                <div className="border-2 border-dashed border-nano-forest-800 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
+                  {isLoading ? (
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-nano-gray-100">Generating content...</p>
+                    </div>
+                  ) : output ? (
+                    <div className="w-full">
+                      {typeof output === 'string' && output.startsWith('http') ? (
+                        <Image src={output} alt="Generated content" width={500} height={500} className="w-full h-auto rounded" />
+                      ) : (
+                        <pre className="whitespace-pre-wrap text-sm">{output}</pre>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-nano-gray-100 text-center">Your generated content will appear here</p>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="flex w-full items-center gap-3">
-              <ThinSlider value={steps} onChange={(v) => setSteps(v)} />
-              <span className="w-10 text-right text-[13px] text-nano-gray-100/85">
-                {steps}
-              </span>
+          </TabsContent>
+
+          {/* Generating Logo Tab */}
+          <TabsContent value="generating-logo" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Side - Form */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Generating Logo</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="brandName">Brand Name</Label>
+                    <Input
+                      name="brandName"
+                      placeholder="Enter your Brand Name"
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
+                      onChange={(e) => handleInputChange(e, setGeneratingLogoForm)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="industry">Your Industry</Label>
+                    <Select onValueChange={(value) => handleSelectChange(value, "industry", setGeneratingLogoForm)}>
+                      <SelectTrigger className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                        <SelectValue placeholder="Select your industry" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="retail">Retail</SelectItem>
+                        <SelectItem value="finance">Finance</SelectItem>
+                        <SelectItem value="healthcare">Healthcare</SelectItem>
+                        <SelectItem value="technology">Technology</SelectItem>
+                        <SelectItem value="education">Education</SelectItem>
+                        <SelectItem value="food-beverage">Food & Beverage</SelectItem>
+                        <SelectItem value="travel-tourism">Travel & Tourism</SelectItem>
+                        <SelectItem value="automotive">Automotive</SelectItem>
+                        <SelectItem value="real-estate">Real Estate</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="adPlatform">Ad Platform</Label>
+                    <Select onValueChange={(value) => handleSelectChange(value, "adPlatform", setGeneratingLogoForm)}>
+                      <SelectTrigger className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                        <SelectValue placeholder="Select ad platform" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="facebook">Facebook</SelectItem>
+                        <SelectItem value="instagram">Instagram</SelectItem>
+                        <SelectItem value="linkedin">LinkedIn</SelectItem>
+                        <SelectItem value="google-ads">Google Ads</SelectItem>
+                        <SelectItem value="twitter">Twitter/X</SelectItem>
+                        <SelectItem value="youtube">YouTube</SelectItem>
+                        <SelectItem value="tiktok">TikTok</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="campaignObjective">Campaign Objective</Label>
+                    <Select onValueChange={(value) => handleSelectChange(value, "campaignObjective", setGeneratingLogoForm)}>
+                      <SelectTrigger className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                        <SelectValue placeholder="Select campaign objective" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="brand-awareness">Brand Awareness</SelectItem>
+                        <SelectItem value="consideration">Consideration</SelectItem>
+                        <SelectItem value="conversion">Conversion</SelectItem>
+                        <SelectItem value="engagement">Engagement</SelectItem>
+                        <SelectItem value="traffic">Traffic</SelectItem>
+                        <SelectItem value="app-installs">App Installs</SelectItem>
+                        <SelectItem value="lead-generation">Lead Generation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="targetAudience">Target Audience</Label>
+                    <Textarea
+                      name="targetAudience"
+                      placeholder="Describe your target audience demographics, interests, and behaviors..."
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                      onChange={(e) => handleInputChange(e, setGeneratingLogoForm)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="keyMessages">Key Messages</Label>
+                    <Textarea
+                      name="keyMessages"
+                      placeholder="List the main points you want to communicate in your ad..."
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                      onChange={(e) => handleInputChange(e, setGeneratingLogoForm)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="brandGuidelines">Brand Guidelines</Label>
+                    <Textarea
+                      name="brandGuidelines"
+                      placeholder="Include any brand colors, tone of voice, restrictions, or specific requirements..."
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                      onChange={(e) => handleInputChange(e, setGeneratingLogoForm)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">Upscale Image</Label>
+                    <RadioGroup 
+                      value={generatingLogoForm.upscaleImage} 
+                      onValueChange={(value) => handleSelectChange(value, "upscaleImage", setGeneratingLogoForm)}
+                      className="flex space-x-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="no" id="logo-upscale-no" />
+                        <Label htmlFor="logo-upscale-no">No</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="yes" id="logo-upscale-yes" />
+                        <Label htmlFor="logo-upscale-yes">Yes</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <Button 
+                    onClick={() => handleSubmit(generatingLogoForm, false)}
+                    disabled={isLoading}
+                    className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
+                  >
+                    {isLoading ? "Generating..." : "Generate Logo"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Side - Output */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Generated Output</h3>
+                <div className="border-2 border-dashed border-nano-forest-800 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
+                  {isLoading ? (
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-nano-gray-100">Generating content...</p>
+                    </div>
+                  ) : output ? (
+                    <div className="w-full">
+                      {typeof output === 'string' && output.startsWith('http') ? (
+                        <Image src={output} alt="Generated content" width={500} height={500} className="w-full h-auto rounded" />
+                      ) : (
+                        <pre className="whitespace-pre-wrap text-sm">{output}</pre>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-nano-gray-100 text-center">Your generated content will appear here</p>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
+          </TabsContent>
 
-          {/* --------------AI labels toggle-------------- */}
-          <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-[13px] text-nano-gray-100/85">
-              AI-edited labels on generated images
+          {/* Recreating Logo Tab */}
+          <TabsContent value="recreating-logo" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Side - Form */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Recreating Logo</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="photo">Logo Photo</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(e, setRecreatingLogoForm)}
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="keyMessages">Key Messages</Label>
+                    <Textarea
+                      name="keyMessages"
+                      placeholder="List the main points you want to communicate in your ad..."
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                      onChange={(e) => handleInputChange(e, setRecreatingLogoForm)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">Upscale Image</Label>
+                    <RadioGroup 
+                      value={recreatingLogoForm.upscaleImage} 
+                      onValueChange={(value) => handleSelectChange(value, "upscaleImage", setRecreatingLogoForm)}
+                      className="flex space-x-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="no" id="recreate-upscale-no" />
+                        <Label htmlFor="recreate-upscale-no">No</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="yes" id="recreate-upscale-yes" />
+                        <Label htmlFor="recreate-upscale-yes">Yes</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <Button 
+                    onClick={() => handleSubmit(recreatingLogoForm, true)}
+                    disabled={isLoading || !recreatingLogoForm.photo}
+                    className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
+                  >
+                    {isLoading ? "Generating..." : "Recreate Logo"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Side - Output */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Generated Output</h3>
+                <div className="border-2 border-dashed border-nano-forest-800 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
+                  {isLoading ? (
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-nano-gray-100">Generating content...</p>
+                    </div>
+                  ) : output ? (
+                    <div className="w-full">
+                      {typeof output === 'string' && output.startsWith('http') ? (
+                        <Image src={output} alt="Generated content" width={500} height={500} className="w-full h-auto rounded" />
+                      ) : (
+                        <pre className="whitespace-pre-wrap text-sm">{output}</pre>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-nano-gray-100 text-center">Your generated content will appear here</p>
+                  )}
+                </div>
+              </div>
             </div>
-            <Switch
-              checked={aiLabels}
-              onCheckedChange={setAiLabels}
-              className="data-[state=checked]:bg-emerald-500"
-            />
-          </div>
-        </section>
-
-        {/* --------------Action buttons-------------- */}
-        <section className="mb-6 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
-          <Button className="h-8 rounded-full bg-nano-olive-700 px-3 text-[13px] font-medium text-nano-mint hover:bg-nano-deep-900 w-full sm:w-auto">
-            Auto-Scenario
-          </Button>
-          <Button className="h-8 rounded-full bg-emerald-500 px-3 text-[13px] font-semibold text-black hover:bg-emerald-500/90 w-full sm:w-auto">
-            Generate
-          </Button>
-        </section>
-
-        {/*-------------- Progress-------------- */}
-        <section className="mb-7">
-          <div className="mb-2 text-[13px] text-nano-gray-100/85">
-            Generating Images
-          </div>
-          <ThinProgress value={progress} />
-        </section>
-
-        {/* --------------Gallery-------------- */}
-        <section>
-          <h2 className="mb-3 text-[15px] font-semibold text-nano-gray-100">
-            Generated Images
-          </h2>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
-            {IMAGES.slice(0, 5).map((src) => (
-              <figure
-                key={src}
-                className="aspect-[4/3] overflow-hidden rounded-lg bg-nano-olive-700 ring-1 ring-nano-forest-800"
-              >
-                <Image
-                  src={src}
-                  alt="Generated product"
-                  width={400}
-                  height={300}
-                  className="h-full w-full object-cover"
-                />
-              </figure>
-            ))}
-          </div>
-
-          {/* --------------second row left image-------------- */}
-          <div className="mt-4 grid grid-cols-1 max-w-full sm:max-w-[220px]">
-            <figure className="aspect-[4/3] overflow-hidden rounded-lg bg-nano-olive-700 ring-1 ring-nano-forest-800">
-              <Image
-                src={IMAGES[5]}
-                width={400}
-                height={300}
-                alt="Generated product"
-                className="h-full w-full object-cover"
-              />
-            </figure>
-          </div>
-        </section>
+          </TabsContent>
+        </Tabs>
       </div>
     </main>
-  );
-}
-
-function ThinSlider({
-  value,
-  onChange,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-}) {
-  return (
-    <RdxSlider.Root
-      value={[value]}
-      onValueChange={(v) => onChange(v[0])}
-      min={0}
-      max={100}
-      step={1}
-      className="relative flex w-full touch-none select-none items-center"
-    >
-      <RdxSlider.Track className="relative h-[6px] w-full grow overflow-hidden rounded-full bg-nano-forest-800">
-        <RdxSlider.Range className="absolute h-full bg-white" />
-      </RdxSlider.Track>
-
-      <RdxSlider.Thumb
-        aria-label="Slider handle"
-        className="block h-0 w-0 rounded-full bg-transparent outline-none ring-0"
-      />
-    </RdxSlider.Root>
-  );
-}
-
-function ThinProgress({ value }: { value: number }) {
-  return (
-    <div className="relative h-[8px] w-full overflow-hidden rounded-full bg-nano-forest-800">
-      <div
-        className="absolute left-0 top-0 h-full bg-white"
-        style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
-      />
-    </div>
   );
 }
