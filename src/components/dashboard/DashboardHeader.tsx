@@ -88,8 +88,7 @@ export default function DashboardHeader() {
     setCustomTag("");
   };
 
-  const removeDialogTag = (t: string) =>
-    setSelTags((prev) => prev.filter((x) => x !== t));
+
 
   async function handleCreate() {
     if (!user) return;
