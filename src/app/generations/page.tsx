@@ -119,12 +119,30 @@ export default function Generations() {
 
         {/* ----------------Tabs Section------------- */}
         <div className="w-full">
-          <div className="flex w-full gap-x-10 mb-8 border-b border-nano-forest-800">
+          {/* Desktop Tabs */}
+          <div className="hidden md:flex w-full gap-x-8 lg:gap-x-10 mb-8 border-b border-nano-forest-800">
             <button onClick={() => setActiveTab("ad-creative")} className={`text-xs md:text-sm pb-2 ${activeTab === "ad-creative" ? "border-b-2 border-emerald-500 text-emerald-500" : "text-nano-gray-100/85"}`}>Ad Creative</button>
             <button onClick={() => setActiveTab("product-photography")} className={`text-xs md:text-sm pb-2 ${activeTab === "product-photography" ? "border-b-2 border-emerald-500 text-emerald-500" : "text-nano-gray-100/85"}`}>Product Photography</button>
             <button onClick={() => setActiveTab("product-photography-model")} className={`text-xs md:text-sm pb-2 ${activeTab === "product-photography-model" ? "border-b-2 border-emerald-500 text-emerald-500" : "text-nano-gray-100/85"}`}>Product Photography with Model</button>
             <button onClick={() => setActiveTab("generating-logo")} className={`text-xs md:text-sm pb-2 ${activeTab === "generating-logo" ? "border-b-2 border-emerald-500 text-emerald-500" : "text-nano-gray-100/85"}`}>Generating Logo</button>
             <button onClick={() => setActiveTab("recreating-logo")} className={`text-xs md:text-sm pb-2 ${activeTab === "recreating-logo" ? "border-b-2 border-emerald-500 text-emerald-500" : "text-nano-gray-100/85"}`}>Recreating Logo</button>
+          </div>
+
+          {/* Mobile Select */}
+          <div className="md:hidden mb-8">
+            <Label htmlFor="generation-select" className="mb-3 block">Select Generation</Label>
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ad-creative">Ad Creative</SelectItem>
+                <SelectItem value="product-photography">Product Photography</SelectItem>
+                <SelectItem value="product-photography-model">Product Photography with Model</SelectItem>
+                <SelectItem value="generating-logo">Generating Logo</SelectItem>
+                <SelectItem value="recreating-logo">Recreating Logo</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* ---------Ad Creative Tab ---------*/}
@@ -230,11 +248,11 @@ export default function Generations() {
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="no" id="upscale-no" />
-                          <Label htmlFor="upscale-no">No</Label>
+                          <Label htmlFor="upscale-no" className="cursor-pointer">No</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="yes" id="upscale-yes" />
-                          <Label htmlFor="upscale-yes">Yes</Label>
+                          <Label htmlFor="upscale-yes" className="cursor-pointer">Yes</Label>
                         </div>
                       </RadioGroup>
                     </div>
@@ -252,7 +270,7 @@ export default function Generations() {
                 {/* Right Side - Output */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Generated Output</h3>
-                  <div className="border-2 border-dashed border-nano-forest-800 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
+                  <div className="border-2 border-dashed text-nano-gray-400 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
                     {isLoading ? (
                       <div className="text-center">
                         <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
@@ -302,11 +320,11 @@ export default function Generations() {
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="no" id="photo-upscale-no" />
-                          <Label htmlFor="photo-upscale-no">No</Label>
+                          <Label htmlFor="photo-upscale-no" className="cursor-pointer">No</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="yes" id="photo-upscale-yes" />
-                          <Label htmlFor="photo-upscale-yes">Yes</Label>
+                          <Label htmlFor="photo-upscale-yes" className="cursor-pointer">Yes</Label>
                         </div>
                       </RadioGroup>
                     </div>
@@ -324,7 +342,7 @@ export default function Generations() {
                 {/* Right Side - Output */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Generated Output</h3>
-                  <div className="border-2 border-dashed border-nano-forest-800 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
+                  <div className="border-2 border-dashed text-nano-gray-400 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
                     {isLoading ? (
                       <div className="text-center">
                         <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
@@ -374,11 +392,11 @@ export default function Generations() {
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="no" id="model-upscale-no" />
-                          <Label htmlFor="model-upscale-no">No</Label>
+                          <Label htmlFor="model-upscale-no" className="cursor-pointer">No</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="yes" id="model-upscale-yes" />
-                          <Label htmlFor="model-upscale-yes">Yes</Label>
+                          <Label htmlFor="model-upscale-yes" className="cursor-pointer">Yes</Label>
                         </div>
                       </RadioGroup>
                     </div>
@@ -396,7 +414,7 @@ export default function Generations() {
                 {/* Right Side - Output */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Generated Output</h3>
-                  <div className="border-2 border-dashed border-nano-forest-800 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
+                  <div className="border-2 border-dashed text-nano-gray-400 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
                     {isLoading ? (
                       <div className="text-center">
                         <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
@@ -532,11 +550,11 @@ export default function Generations() {
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="no" id="logo-upscale-no" />
-                          <Label htmlFor="logo-upscale-no">No</Label>
+                          <Label htmlFor="logo-upscale-no" className="cursor-pointer">No</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="yes" id="logo-upscale-yes" />
-                          <Label htmlFor="logo-upscale-yes">Yes</Label>
+                          <Label htmlFor="logo-upscale-yes" className="cursor-pointer">Yes</Label>
                         </div>
                       </RadioGroup>
                     </div>
@@ -554,7 +572,7 @@ export default function Generations() {
                 {/* Right Side - Output */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Generated Output</h3>
-                  <div className="border-2 border-dashed border-nano-forest-800 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
+                  <div className="border-2 border-dashed text-nano-gray-400 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
                     {isLoading ? (
                       <div className="text-center">
                         <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
@@ -614,11 +632,11 @@ export default function Generations() {
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="no" id="recreate-upscale-no" />
-                          <Label htmlFor="recreate-upscale-no">No</Label>
+                          <Label htmlFor="recreate-upscale-no" className="cursor-pointer">No</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="yes" id="recreate-upscale-yes" />
-                          <Label htmlFor="recreate-upscale-yes">Yes</Label>
+                          <Label htmlFor="recreate-upscale-yes" className="cursor-pointer">Yes</Label>
                         </div>
                       </RadioGroup>
                     </div>
@@ -636,7 +654,7 @@ export default function Generations() {
                 {/* Right Side - Output */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Generated Output</h3>
-                  <div className="border-2 border-dashed border-nano-forest-800 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
+                  <div className="border-2 border-dashed text-nano-gray-400 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
                     {isLoading ? (
                       <div className="text-center">
                         <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
