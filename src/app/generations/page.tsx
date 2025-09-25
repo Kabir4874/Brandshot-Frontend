@@ -214,7 +214,7 @@ export default function Generations() {
                       <Textarea
                         name="targetAudience"
                         placeholder="Describe your target audience demographics, interests, and behaviors..."
-                        className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                        className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px] placeholder-red-400"
                         onChange={(e) => handleInputChange(e, setAdCreativeForm)}
                       />
                     </div>

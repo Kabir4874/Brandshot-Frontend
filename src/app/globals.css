@@ -48,6 +48,12 @@ html, body {
   background: var(--color-surface-50);
   color: var(--color-ink);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss03";
+
+  
+}
+
+textarea::placeholder {
+  color: #ffffff8f;
 }
 
 img {
