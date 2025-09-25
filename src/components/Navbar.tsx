@@ -55,7 +55,7 @@ export default function NanoBananaNavbar() {
                 Dashboard
               </Link>
               <Link
-                href="/photography"
+                href="/generations"
                 className="transition-colors hover:text-white"
               >
                 Generations

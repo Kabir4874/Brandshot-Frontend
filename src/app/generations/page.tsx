@@ -8,7 +8,7 @@ import * as RdxSlider from "@radix-ui/react-slider";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function ProductPhotography() {
+export default function Generations() {
   const [prompt, setPrompt] = useState("");
   const [seed, setSeed] = useState(50);
   const [steps, setSteps] = useState(25);
@@ -34,17 +34,17 @@ export default function ProductPhotography() {
   return (
     <main className="w-full bg-nano-deep-950 text-nano-white">
       <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-16">
-        {/* Title + subtitle */}
+        {/* --------------Title + subtitle-------------- */}
         <header className="mb-5">
           <h1 className="text-2xl md:text-3xl font-extrabold leading-none tracking-tight">
-            Product Photography
+            Product Photography Generations
           </h1>
           <p className="mt-1 text-[13px] text-nano-gray-100/85">
             Generate high-quality product images for your marketing campaigns.
           </p>
         </header>
 
-        {/* Prompt areas */}
+        {/* --------------Prompt areas-------------- */}
         <section className="mb-6">
           <Textarea
             value={prompt}
@@ -60,9 +60,9 @@ export default function ProductPhotography() {
           />
         </section>
 
-        {/* Controls grid */}
+        {/* --------------Controls grid-------------- */}
         <section className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-2">
-          {/* Seed slider + value */}
+          {/* --------------Seed slider + value-------------- */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-2">
             <div className="sm:min-w-[80px] text-[13px] text-nano-gray-100/85">
               Seed
@@ -75,7 +75,7 @@ export default function ProductPhotography() {
             </div>
           </div>
 
-          {/* Steps slider + value */}
+          {/* --------------Steps slider + value-------------- */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-2">
             <div className="sm:min-w-[80px] text-[13px] text-nano-gray-100/85">
               Steps
@@ -88,7 +88,7 @@ export default function ProductPhotography() {
             </div>
           </div>
 
-          {/* AI labels toggle */}
+          {/* --------------AI labels toggle-------------- */}
           <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-[13px] text-nano-gray-100/85">
               AI-edited labels on generated images
@@ -101,7 +101,7 @@ export default function ProductPhotography() {
           </div>
         </section>
 
-        {/* Action buttons */}
+        {/* --------------Action buttons-------------- */}
         <section className="mb-6 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
           <Button className="h-8 rounded-full bg-nano-olive-700 px-3 text-[13px] font-medium text-nano-mint hover:bg-nano-deep-900 w-full sm:w-auto">
             Auto-Scenario
@@ -111,7 +111,7 @@ export default function ProductPhotography() {
           </Button>
         </section>
 
-        {/* Progress */}
+        {/*-------------- Progress-------------- */}
         <section className="mb-7">
           <div className="mb-2 text-[13px] text-nano-gray-100/85">
             Generating Images
@@ -119,7 +119,7 @@ export default function ProductPhotography() {
           <ThinProgress value={progress} />
         </section>
 
-        {/* Gallery */}
+        {/* --------------Gallery-------------- */}
         <section>
           <h2 className="mb-3 text-[15px] font-semibold text-nano-gray-100">
             Generated Images
@@ -142,7 +142,7 @@ export default function ProductPhotography() {
             ))}
           </div>
 
-          {/* second row left image */}
+          {/* --------------second row left image-------------- */}
           <div className="mt-4 grid grid-cols-1 max-w-full sm:max-w-[220px]">
             <figure className="aspect-[4/3] overflow-hidden rounded-lg bg-nano-olive-700 ring-1 ring-nano-forest-800">
               <Image
