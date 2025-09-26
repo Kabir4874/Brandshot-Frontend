@@ -134,6 +134,8 @@ export default function ProductPhotography() {
                 <Image
                   src={src}
                   alt="Generated product"
+                  width={400}
+                  height={300}
                   className="h-full w-full object-cover"
                 />
               </figure>
@@ -145,6 +147,8 @@ export default function ProductPhotography() {
             <figure className="aspect-[4/3] overflow-hidden rounded-lg bg-nano-olive-700 ring-1 ring-nano-forest-800">
               <Image
                 src={IMAGES[5]}
+                width={400}
+                height={300}
                 alt="Generated product"
                 className="h-full w-full object-cover"
               />
