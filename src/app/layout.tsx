@@ -29,8 +29,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NanoBananaNavbar />
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <NanoBananaNavbar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
