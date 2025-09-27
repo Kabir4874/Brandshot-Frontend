@@ -1,10 +1,9 @@
-// src/components/NanoBananaNavbar.tsx
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/providers/AuthProvider"; // <- pull firebase user here
+import { useAuth } from "@/providers/AuthProvider";
 import { Menu, Search, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,7 +30,6 @@ export default function NanoBananaNavbar() {
     document.body.style.overflow = open ? "hidden" : "";
   }, [open]);
 
-  // Active links (no Settings in menus per your requirement)
   const navLinks = [
     { href: "/", label: "Dashboard" },
     { href: "/generations", label: "Generations" },
@@ -48,7 +46,6 @@ export default function NanoBananaNavbar() {
     setOpen(false);
   };
 
-  // Optional: initial fallback (e.g., initials) when no photoURL
   const fallback = (user?.displayName || "NB")
     .split(" ")
     .map((s) => s[0])
