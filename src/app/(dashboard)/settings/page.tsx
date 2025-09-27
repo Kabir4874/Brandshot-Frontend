@@ -25,8 +25,6 @@ import { AppUserDoc, PromptPreset } from "@/types/user";
 import { signOut } from "firebase/auth";
 import { useEffect, useMemo, useState } from "react";
 
-/* ---------------- Dynamic options per category ---------------- */
-
 type Category = PromptPreset["category"];
 type Opt = { value: string; label: string };
 
