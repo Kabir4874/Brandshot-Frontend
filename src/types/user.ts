@@ -17,3 +17,5 @@ export type PromptPreset = {
   createdAt: number;
   updatedAt: number;
 };
+
+export type PresetCategory = "social" | "marketing" | "ecom";
