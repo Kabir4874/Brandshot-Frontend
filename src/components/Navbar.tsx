@@ -1,7 +1,6 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/providers/AuthProvider";
 import { Menu, Search, X } from "lucide-react";
@@ -105,12 +104,12 @@ export default function NanoBananaNavbar() {
               </div>
 
               {/* Desktop CTA */}
-              <Button
+              {/* <Button
                 size="sm"
                 className="hidden h-9 rounded-md bg-emerald-500 px-4 text-[13px] font-semibold text-black shadow-none hover:bg-emerald-500/90 md:inline-flex"
               >
                 New Project
-              </Button>
+              </Button> */}
 
               {/* Desktop avatar (click -> signin/settings) */}
               <button
@@ -200,9 +199,9 @@ export default function NanoBananaNavbar() {
 
           {/* CTA + avatar (mobile) */}
           <div className="mt-3 flex items-center gap-3">
-            <Button className="h-9 flex-1 rounded-md bg-emerald-500 px-4 text-[13px] font-semibold text-black hover:bg-emerald-500/90">
+            {/* <Button className="h-9 flex-1 rounded-md bg-emerald-500 px-4 text-[13px] font-semibold text-black hover:bg-emerald-500/90">
               New Project
-            </Button>
+            </Button> */}
 
             <button
               type="button"

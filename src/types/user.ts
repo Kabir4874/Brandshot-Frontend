@@ -4,6 +4,7 @@ export type AppUserDoc = {
   displayName?: string;
   photoURL?: string | null;
   plan?: "free" | "pro";
+  openrouterKey?: string | null;
   createdAt: number; // epoch ms
   updatedAt: number; // epoch ms
 };

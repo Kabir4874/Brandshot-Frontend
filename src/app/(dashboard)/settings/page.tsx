@@ -4,10 +4,12 @@ import {
   createPreset,
   getUserDoc,
   listPresets,
+  setOpenRouterKey,
   upsertUserProfile,
 } from "@/api/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -25,6 +27,7 @@ import { AppUserDoc, PromptPreset } from "@/types/user";
 import { signOut } from "firebase/auth";
 import { useEffect, useMemo, useState } from "react";
 
+/* ---------- Dynamic options ---------- */
 type Category = PromptPreset["category"];
 type Opt = { value: string; label: string };
 
@@ -88,18 +91,18 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
-  // Presets state (category-scoped list)
-  const [activeTab, setActiveTab] =
-    useState<PromptPreset["category"]>("social");
+  // Presets
+  const [activeTab, setActiveTab] = useState<Category>("social");
   const [presets, setPresets] = useState<PromptPreset[]>([]);
   const [savingPreset, setSavingPreset] = useState(false);
-
-  // Preset form controls
   const [platform, setPlatform] = useState("");
   const [ctype, setCtype] = useState("");
   const [prompt, setPrompt] = useState("");
 
-  // Reset selects when tab changes to avoid mismatched values
+  // OpenRouter Key form
+  const [keyField, setKeyField] = useState(""); // input box
+  const [savingKey, setSavingKey] = useState(false);
+
   useEffect(() => {
     setPlatform("");
     setCtype("");
@@ -107,7 +110,7 @@ export default function SettingsPage() {
 
   const currentOptions = OPTIONS[activeTab];
 
-  // Load user profile + presets
+  // Load profile + presets + prefill key mask
   useEffect(() => {
     let dead = false;
 
@@ -115,22 +118,32 @@ export default function SettingsPage() {
       if (!user) {
         setProfile(null);
         setPresets([]);
+        setKeyField("");
         setLoading(false);
         return;
       }
       setLoading(true);
       setErr(null);
       try {
-        // Upsert minimal profile from Auth, strip undefined safely (handled in API)
+        // Upsert minimal profile (safe nulls)
         await upsertUserProfile(user.uid, {
           uid: user.uid,
           email: user.email ?? "",
           displayName: user.displayName ?? "",
-          photoURL: user.photoURL ?? null, // NOT undefined
+          photoURL: user.photoURL ?? null,
         });
 
         const doc = await getUserDoc(user.uid);
-        if (!dead) setProfile(doc);
+        if (!dead) {
+          setProfile(doc);
+
+          // Prefill field with masked key, but only for display
+          if (doc?.openrouterKey) {
+            setKeyField(maskKey(doc.openrouterKey));
+          } else {
+            setKeyField("");
+          }
+        }
 
         const list = await listPresets(user.uid, activeTab);
         if (!dead) setPresets(list);
@@ -147,7 +160,7 @@ export default function SettingsPage() {
     };
   }, [user, activeTab]);
 
-  // Avatar initials fallback
+  // Avatar initials
   const initials = useMemo(() => {
     const name = profile?.displayName || "";
     const parts = name.trim().split(/\s+/);
@@ -157,6 +170,7 @@ export default function SettingsPage() {
     return (first + last).toUpperCase() || "U";
   }, [profile?.displayName]);
 
+  /* --------- Presets --------- */
   async function handleSavePreset() {
     if (!user) return;
     if (!platform || !ctype || !prompt.trim()) {
@@ -172,10 +186,8 @@ export default function SettingsPage() {
         contentType: ctype,
         prompt: prompt.trim(),
       });
-      // refresh list
       const list = await listPresets(user.uid, activeTab);
       setPresets(list);
-      // reset inputs
       setPlatform("");
       setCtype("");
       setPrompt("");
@@ -183,6 +195,66 @@ export default function SettingsPage() {
       setErr(e?.message || "Failed to save preset.");
     } finally {
       setSavingPreset(false);
+    }
+  }
+
+  /* --------- OpenRouter Key --------- */
+  function isMasked(v: string) {
+    return (
+      /^•+\*[A-Za-z0-9_-]{4}$/.test(v) || /^•+$/.test(v) || v.startsWith("••••")
+    );
+  }
+
+  function maskKey(k: string) {
+    if (!k) return "";
+    const last4 = k.slice(-4);
+    return `•••••••••••••••••••${last4}`;
+  }
+
+  async function saveKey() {
+    if (!user) return;
+    setSavingKey(true);
+    setErr(null);
+    try {
+      // If input looks masked, keep existing key (no change)
+      const current = profile?.openrouterKey ?? null;
+      let toSave: string | null;
+
+      if (!keyField.trim()) {
+        toSave = null; // clear key
+      } else if (isMasked(keyField.trim()) && current) {
+        toSave = current; // keep
+      } else {
+        // Optional: Validate format (OpenRouter keys often look like sk-or-v1-...)
+        // We'll just ensure non-empty for now.
+        toSave = keyField.trim();
+      }
+
+      await setOpenRouterKey(user.uid, toSave);
+      // Refresh profile
+      const doc = await getUserDoc(user.uid);
+      setProfile(doc);
+      setKeyField(doc?.openrouterKey ? maskKey(doc.openrouterKey) : "");
+    } catch (e: any) {
+      setErr(e?.message || "Failed to save API key.");
+    } finally {
+      setSavingKey(false);
+    }
+  }
+
+  async function removeKey() {
+    if (!user) return;
+    setSavingKey(true);
+    setErr(null);
+    try {
+      await setOpenRouterKey(user.uid, null);
+      const doc = await getUserDoc(user.uid);
+      setProfile(doc);
+      setKeyField("");
+    } catch (e: any) {
+      setErr(e?.message || "Failed to remove API key.");
+    } finally {
+      setSavingKey(false);
     }
   }
 
@@ -228,10 +300,7 @@ export default function SettingsPage() {
             </div>
             <Button
               className="h-8 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95"
-              onClick={() => {
-                // Wire up a profile editor if needed, then call upsertUserProfile
-                alert("Profile management coming soon.");
-              }}
+              onClick={() => alert("Profile management coming soon.")}
               disabled={loading}
             >
               Manage
@@ -239,7 +308,7 @@ export default function SettingsPage() {
           </div>
         </Section>
 
-        {/* Subscription & Billing (static demo fields for MVP) */}
+        {/* Subscription & Billing (static for now) */}
         <Section title="Subscription & Billing">
           <Row
             label="Current Plan"
@@ -256,13 +325,56 @@ export default function SettingsPage() {
           </Row>
         </Section>
 
-        {/* API Keys (placeholder) */}
+        {/* API Keys */}
         <Section title="API Keys">
-          <Row label="OpenRouter API" value="Integrated">
-            <Button className="h-8 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95">
-              Manage
-            </Button>
-          </Row>
+          <div className="flex flex-col gap-3 rounded-lg border border-nano-forest-800 bg-nano-olive-700/20 p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-[13px] font-semibold text-nano-gray-100">
+                  OpenRouter API
+                </div>
+                <div className="text-[12px] text-nano-gray-100/75">
+                  Store your OpenRouter API key to enable model calls.
+                </div>
+              </div>
+              <div className="text-[12px] text-nano-gray-100/75">
+                {profile?.openrouterKey ? "Saved" : "Not set"}
+              </div>
+            </div>
+
+            <div className="grid gap-2 sm:flex sm:items-end sm:gap-3">
+              <div className="flex-1 min-w-[260px]">
+                <Label className="mb-1 block text-[12px] text-nano-gray-100">
+                  API Key
+                </Label>
+                <Input
+                  type="password"
+                  placeholder="sk-or-v1-..."
+                  value={keyField}
+                  onChange={(e) => setKeyField(e.target.value)}
+                  className="h-10 w-full rounded-md border border-nano-forest-800 bg-nano-olive-700 text-[13px] text-nano-gray-100 placeholder:text-nano-gray-100/60 focus-visible:ring-0"
+                />
+              </div>
+
+              <div className="flex gap-2 sm:mb-1">
+                <Button
+                  className="h-9 rounded-md bg-emerald-500 px-3 text-[13px] font-semibold text-black hover:bg-emerald-500/90 disabled:opacity-70"
+                  onClick={saveKey}
+                  disabled={savingKey || !user}
+                >
+                  {savingKey ? "Saving…" : "Save"}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="h-9 rounded-md bg-transparent px-3 text-[13px] text-nano-mint hover:bg-nano-deep-900 disabled:opacity-70"
+                  onClick={removeKey}
+                  disabled={savingKey || !profile?.openrouterKey || !user}
+                >
+                  Remove
+                </Button>
+              </div>
+            </div>
+          </div>
         </Section>
 
         {/* Prompt Presets */}
@@ -303,8 +415,8 @@ export default function SettingsPage() {
                 setPrompt={setPrompt}
                 onSave={handleSavePreset}
                 saving={savingPreset}
-                platformOptions={OPTIONS.social.platforms}
-                typeOptions={OPTIONS.social.contentTypes}
+                platformOptions={currentOptions.platforms}
+                typeOptions={currentOptions.contentTypes}
               />
               <PresetList presets={presets} />
             </TabsContent>
@@ -319,8 +431,8 @@ export default function SettingsPage() {
                 setPrompt={setPrompt}
                 onSave={handleSavePreset}
                 saving={savingPreset}
-                platformOptions={OPTIONS.marketing.platforms}
-                typeOptions={OPTIONS.marketing.contentTypes}
+                platformOptions={currentOptions.platforms}
+                typeOptions={currentOptions.contentTypes}
               />
               <PresetList presets={presets} />
             </TabsContent>
@@ -335,8 +447,8 @@ export default function SettingsPage() {
                 setPrompt={setPrompt}
                 onSave={handleSavePreset}
                 saving={savingPreset}
-                platformOptions={OPTIONS.ecom.platforms}
-                typeOptions={OPTIONS.ecom.contentTypes}
+                platformOptions={currentOptions.platforms}
+                typeOptions={currentOptions.contentTypes}
               />
               <PresetList presets={presets} />
             </TabsContent>

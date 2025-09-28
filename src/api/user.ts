@@ -11,6 +11,7 @@ import {
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   setDoc,
   updateDoc,
   where,
@@ -63,6 +64,26 @@ export async function upsertUserProfile(
   }
 
   return setDoc(ref, safe, { merge: true });
+}
+
+export async function setOpenRouterKey(uid: string, key: string | null) {
+  const value =
+    typeof key === "string" && key.trim().length > 0 ? key.trim() : null;
+  await setDoc(
+    doc(db, USERS, uid),
+    { openrouterKey: value, openrouterKeyUpdatedAt: serverTimestamp() },
+    { merge: true }
+  );
+}
+
+export async function getOpenRouterKey(uid: string): Promise<string | null> {
+  const ref = doc(db, USERS, uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return null;
+
+  const data = snap.data() as { openrouterKey?: string | null };
+  const key = data?.openrouterKey ?? null;
+  return typeof key === "string" && key.trim().length > 0 ? key : null;
 }
 
 /** Get all presets for a user (optionally by category) */
