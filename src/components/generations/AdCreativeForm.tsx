@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
+import toast from "react-hot-toast";
 
 export default function AdCreativeForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -44,9 +45,16 @@ export default function AdCreativeForm() {
       });
 
       const result = await response.json();
-      setOutput(result.data || result);
+      if (result.operationStatus === "sucessfull") {
+        setOutput(result.imageOutput);
+        toast.success("Image generated successfully!");
+      } else {
+        setOutput("Error generating content. Please try again.");
+        toast.error("Error generating content. Please try again.");
+      }
     } catch {
       setOutput("Error generating content. Please try again.");
+      toast.error("Error generating content. Please try again.");
     } finally {
       setIsLoading(false);
     }
