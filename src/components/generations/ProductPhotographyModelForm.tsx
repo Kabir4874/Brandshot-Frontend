@@ -11,6 +11,7 @@ import { useForm, Controller } from "react-hook-form";
 export default function ProductPhotographyModelForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState<string | null>(null);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const productPhotographyModelForm = useForm({
     defaultValues: {
@@ -35,7 +36,7 @@ export default function ProductPhotographyModelForm() {
         });;
       
 
-      const response = await fetch('https://developer.shourav.com/start', {
+      const response = await fetch(backendUrl as string, {
         method: 'POST',
         body: dataToSend
       });

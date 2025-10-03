@@ -17,6 +17,7 @@ import { useForm, Controller } from "react-hook-form";
 export default function AdCreativeForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState<string | null>(null);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const adCreativeForm = useForm({
     defaultValues: {
@@ -36,7 +37,7 @@ export default function AdCreativeForm() {
     setOutput(null);
 
     try {
-      const response = await fetch("https://developer.shourav.com/start", {
+      const response = await fetch(backendUrl as string, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

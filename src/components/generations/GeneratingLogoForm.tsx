@@ -18,6 +18,7 @@ import { useForm, Controller } from "react-hook-form";
 export default function GeneratingLogoForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState<string | null>(null);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const generatingLogoForm = useForm({
     defaultValues: {
@@ -38,13 +39,14 @@ export default function GeneratingLogoForm() {
     setOutput(null);
 
     try {
-      const response = await fetch("https://developer.shourav.com/start", {
+      const response = await fetch(backendUrl as string, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const result = await response.json();
+      console.log(result);
       setOutput(result.data || result);
     } catch {
       setOutput("Error generating content. Please try again.");
