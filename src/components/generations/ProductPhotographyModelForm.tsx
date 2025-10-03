@@ -14,35 +14,30 @@ export default function ProductPhotographyModelForm() {
 
   const productPhotographyModelForm = useForm({
     defaultValues: {
+      operationType: "Product Photography with model",
       photo: null as File | null,
       upscaleImage: "no"
     }
   });
 
-  const handleSubmit = async (formData: any, hasImage: boolean = false) => {
+  const handleSubmit = async (formData: any) => {
     setIsLoading(true);
     setOutput(null);
 
     try {
-      let dataToSend: any;
-      
-      if (hasImage) {
-        dataToSend = new FormData();
+      const dataToSend: any = new FormData();
         Object.keys(formData).forEach(key => {
           if (key === 'photo' && formData[key]) {
             dataToSend.append(key, formData[key][0]);
           } else {
             dataToSend.append(key, formData[key]);
           }
-        });
-      } else {
-        dataToSend = JSON.stringify(formData);
-      }
+        });;
+      
 
       const response = await fetch('https://developer.shourav.com/start', {
         method: 'POST',
-        headers: hasImage ? {} : { 'Content-Type': 'application/json' },
-        body: hasImage ? dataToSend : dataToSend
+        body: dataToSend
       });
 
       const result = await response.json();
@@ -56,7 +51,7 @@ export default function ProductPhotographyModelForm() {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={productPhotographyModelForm.handleSubmit(data => handleSubmit(data, true))}>
+      <form onSubmit={productPhotographyModelForm.handleSubmit(data => handleSubmit(data))}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Side - Form */}
           <div className="space-y-4">

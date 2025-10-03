@@ -3,7 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import Image from "next/image";
@@ -16,46 +22,32 @@ export default function GeneratingLogoForm() {
   const generatingLogoForm = useForm({
     defaultValues: {
       brandName: "",
-      industry: "",
+      yourIndustry: "",
+      operationType: "Brand Logo",
       adPlatform: "",
       campaignObjective: "",
       targetAudience: "",
       keyMessages: "",
       brandGuidelines: "",
-      upscaleImage: "no"
-    }
+      upscaleImage: "no",
+    },
   });
 
-  const handleSubmit = async (formData: any, hasImage: boolean = false) => {
+  const handleSubmit = async (formData: any) => {
     setIsLoading(true);
     setOutput(null);
 
     try {
-      let dataToSend: any;
-      
-      if (hasImage) {
-        dataToSend = new FormData();
-        Object.keys(formData).forEach(key => {
-          if (key === 'photo' && formData[key]) {
-            dataToSend.append(key, formData[key][0]);
-          } else {
-            dataToSend.append(key, formData[key]);
-          }
-        });
-      } else {
-        dataToSend = JSON.stringify(formData);
-      }
-
-      const response = await fetch('https://developer.shourav.com/start', {
-        method: 'POST',
-        headers: hasImage ? {} : { 'Content-Type': 'application/json' },
-        body: hasImage ? dataToSend : dataToSend
+      const response = await fetch("https://developer.shourav.com/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       const result = await response.json();
       setOutput(result.data || result);
     } catch {
-      setOutput('Error generating content. Please try again.');
+      setOutput("Error generating content. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -63,25 +55,33 @@ export default function GeneratingLogoForm() {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={generatingLogoForm.handleSubmit(data => handleSubmit(data, false))}>
+      <form
+        onSubmit={generatingLogoForm.handleSubmit((data) => handleSubmit(data))}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Side - Form */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Generating Logo</h3>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="brandName" className="mb-3 block">Brand Name</Label>
+                <Label htmlFor="brandName" className="mb-3 block">
+                  Brand Name
+                </Label>
                 <Input
-                  {...generatingLogoForm.register("brandName", { required: true })}
+                  {...generatingLogoForm.register("brandName", {
+                    required: true,
+                  })}
                   placeholder="Enter your Brand Name"
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
                 />
               </div>
 
               <div>
-                <Label htmlFor="industry" className="mb-3 block">Your Industry</Label>
+                <Label htmlFor="industry" className="mb-3 block">
+                  Your Industry
+                </Label>
                 <Controller
-                  name="industry"
+                  name="yourIndustry"
                   control={generatingLogoForm.control}
                   rules={{ required: true }}
                   render={({ field }) => (
@@ -95,8 +95,12 @@ export default function GeneratingLogoForm() {
                         <SelectItem value="healthcare">Healthcare</SelectItem>
                         <SelectItem value="technology">Technology</SelectItem>
                         <SelectItem value="education">Education</SelectItem>
-                        <SelectItem value="food-beverage">Food & Beverage</SelectItem>
-                        <SelectItem value="travel-tourism">Travel & Tourism</SelectItem>
+                        <SelectItem value="food-beverage">
+                          Food & Beverage
+                        </SelectItem>
+                        <SelectItem value="travel-tourism">
+                          Travel & Tourism
+                        </SelectItem>
                         <SelectItem value="automotive">Automotive</SelectItem>
                         <SelectItem value="real-estate">Real Estate</SelectItem>
                       </SelectContent>
@@ -106,7 +110,9 @@ export default function GeneratingLogoForm() {
               </div>
 
               <div>
-                <Label htmlFor="adPlatform" className="mb-3 block">Ad Platform</Label>
+                <Label htmlFor="adPlatform" className="mb-3 block">
+                  Ad Platform
+                </Label>
                 <Controller
                   name="adPlatform"
                   control={generatingLogoForm.control}
@@ -131,7 +137,9 @@ export default function GeneratingLogoForm() {
               </div>
 
               <div>
-                <Label htmlFor="campaignObjective" className="mb-3 block">Campaign Objective</Label>
+                <Label htmlFor="campaignObjective" className="mb-3 block">
+                  Campaign Objective
+                </Label>
                 <Controller
                   name="campaignObjective"
                   control={generatingLogoForm.control}
@@ -142,13 +150,21 @@ export default function GeneratingLogoForm() {
                         <SelectValue placeholder="Select campaign objective" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="brand-awareness">Brand Awareness</SelectItem>
-                        <SelectItem value="consideration">Consideration</SelectItem>
+                        <SelectItem value="brand-awareness">
+                          Brand Awareness
+                        </SelectItem>
+                        <SelectItem value="consideration">
+                          Consideration
+                        </SelectItem>
                         <SelectItem value="conversion">Conversion</SelectItem>
                         <SelectItem value="engagement">Engagement</SelectItem>
                         <SelectItem value="traffic">Traffic</SelectItem>
-                        <SelectItem value="app-installs">App Installs</SelectItem>
-                        <SelectItem value="lead-generation">Lead Generation</SelectItem>
+                        <SelectItem value="app-installs">
+                          App Installs
+                        </SelectItem>
+                        <SelectItem value="lead-generation">
+                          Lead Generation
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -156,27 +172,39 @@ export default function GeneratingLogoForm() {
               </div>
 
               <div>
-                <Label htmlFor="targetAudience" className="mb-3 block">Target Audience</Label>
+                <Label htmlFor="targetAudience" className="mb-3 block">
+                  Target Audience
+                </Label>
                 <Textarea
-                  {...generatingLogoForm.register("targetAudience", { required: true })}
+                  {...generatingLogoForm.register("targetAudience", {
+                    required: true,
+                  })}
                   placeholder="Describe your target audience demographics, interests, and behaviors..."
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
                 />
               </div>
 
               <div>
-                <Label htmlFor="keyMessages" className="mb-3 block">Key Messages</Label>
+                <Label htmlFor="keyMessages" className="mb-3 block">
+                  Key Messages
+                </Label>
                 <Textarea
-                  {...generatingLogoForm.register("keyMessages", { required: true })}
+                  {...generatingLogoForm.register("keyMessages", {
+                    required: true,
+                  })}
                   placeholder="List the main points you want to communicate in your ad..."
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
                 />
               </div>
 
               <div>
-                <Label htmlFor="brandGuidelines" className="mb-3 block">Brand Guidelines</Label>
+                <Label htmlFor="brandGuidelines" className="mb-3 block">
+                  Brand Guidelines
+                </Label>
                 <Textarea
-                  {...generatingLogoForm.register("brandGuidelines", { required: true })}
+                  {...generatingLogoForm.register("brandGuidelines", {
+                    required: true,
+                  })}
                   placeholder="Include any brand colors, tone of voice, restrictions, or specific requirements..."
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
                 />
@@ -202,7 +230,7 @@ export default function GeneratingLogoForm() {
                 />
               </div>
 
-              <Button 
+              <Button
                 type="submit"
                 disabled={isLoading}
                 className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
@@ -223,14 +251,22 @@ export default function GeneratingLogoForm() {
                 </div>
               ) : output ? (
                 <div className="w-full">
-                  {typeof output === 'string' && output.startsWith('http') ? (
-                    <Image src={output} alt="Generated content" width={500} height={500} className="w-full h-auto rounded" />
+                  {typeof output === "string" && output.startsWith("http") ? (
+                    <Image
+                      src={output}
+                      alt="Generated content"
+                      width={500}
+                      height={500}
+                      className="w-full h-auto rounded"
+                    />
                   ) : (
                     <pre className="whitespace-pre-wrap text-sm">{output}</pre>
                   )}
                 </div>
               ) : (
-                <p className="text-nano-gray-100 text-center">Your generated content will appear here</p>
+                <p className="text-nano-gray-100 text-center">
+                  Your generated content will appear here
+                </p>
               )}
             </div>
           </div>

@@ -2,7 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import Image from "next/image";
@@ -14,41 +20,35 @@ export default function ProductPhotographyForm() {
 
   const productPhotographyForm = useForm({
     defaultValues: {
+      operationType: "Product Photography",
       photo: null as File | null,
-      upscaleImage: "no"
-    }
+      upscaleImage: "no",
+    },
   });
 
-  const handleSubmit = async (formData: any, hasImage: boolean = false) => {
+  const handleSubmit = async (formData: any) => {
     setIsLoading(true);
     setOutput(null);
 
     try {
-      let dataToSend: any;
-      
-      if (hasImage) {
-        dataToSend = new FormData();
-        Object.keys(formData).forEach(key => {
-          if (key === 'photo' && formData[key]) {
-            dataToSend.append(key, formData[key][0]);
-          } else {
-            dataToSend.append(key, formData[key]);
-          }
-        });
-      } else {
-        dataToSend = JSON.stringify(formData);
-      }
+      const dataToSend: any = new FormData();
+      Object.keys(formData).forEach((key) => {
+        if (key === "photo" && formData[key]) {
+          dataToSend.append(key, formData[key][0]);
+        } else {
+          dataToSend.append(key, formData[key]);
+        }
+      });
+      const response = await fetch("https://developer.shourav.com/start", {
+        method: "POST",
 
-      const response = await fetch('https://developer.shourav.com/start', {
-        method: 'POST',
-        headers: hasImage ? {} : { 'Content-Type': 'application/json' },
-        body: hasImage ? dataToSend : dataToSend
+        body: dataToSend,
       });
 
       const result = await response.json();
       setOutput(result.data || result);
     } catch {
-      setOutput('Error generating content. Please try again.');
+      setOutput("Error generating content. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -56,18 +56,26 @@ export default function ProductPhotographyForm() {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={productPhotographyForm.handleSubmit(data => handleSubmit(data, true))}>
+      <form
+        onSubmit={productPhotographyForm.handleSubmit((data) =>
+          handleSubmit(data)
+        )}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Side - Form */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Product Photography</h3>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="photo" className="mb-3 block">Product Photo</Label>
+                <Label htmlFor="photo" className="mb-3 block">
+                  Product Photo
+                </Label>
                 <Input
                   type="file"
                   accept="image/*"
-                  {...productPhotographyForm.register("photo", { required: true })}
+                  {...productPhotographyForm.register("photo", {
+                    required: true,
+                  })}
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
                 />
               </div>
@@ -92,7 +100,7 @@ export default function ProductPhotographyForm() {
                 />
               </div>
 
-              <Button 
+              <Button
                 type="submit"
                 disabled={isLoading}
                 className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
@@ -113,14 +121,22 @@ export default function ProductPhotographyForm() {
                 </div>
               ) : output ? (
                 <div className="w-full">
-                  {typeof output === 'string' && output.startsWith('http') ? (
-                    <Image src={output} alt="Generated content" width={500} height={500} className="w-full h-auto rounded" />
+                  {typeof output === "string" && output.startsWith("http") ? (
+                    <Image
+                      src={output}
+                      alt="Generated content"
+                      width={500}
+                      height={500}
+                      className="w-full h-auto rounded"
+                    />
                   ) : (
                     <pre className="whitespace-pre-wrap text-sm">{output}</pre>
                   )}
                 </div>
               ) : (
-                <p className="text-nano-gray-100 text-center">Your generated content will appear here</p>
+                <p className="text-nano-gray-100 text-center">
+                  Your generated content will appear here
+                </p>
               )}
             </div>
           </div>
