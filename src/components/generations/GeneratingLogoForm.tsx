@@ -23,14 +23,16 @@ export default function GeneratingLogoForm() {
 
   const generatingLogoForm = useForm({
     defaultValues: {
-      brandName: "",
+      brandName: "Cash Sol",
       yourIndustry: "",
       operationType: "Brand Logo",
       adPlatform: "",
       campaignObjective: "",
-      targetAudience: "",
-      keyMessages: "",
-      brandGuidelines: "",
+      targetAudience: "Small business owners, 25-45 years old",
+      keyMessages:
+        "Simplify your finance workflow with our AI-powered tools. Save time and boost productivity.",
+      brandGuidelines:
+        "Use primary blue (#1E90FF), secondary dark gray (#222222), modern sans-serif fonts, and a professional, ambitious tone.",
       upscaleImage: "no",
     },
   });
@@ -47,8 +49,9 @@ export default function GeneratingLogoForm() {
       });
 
       const result = await response.json();
-      if (result.operationStatus === "sucessfull") {
-        setOutput(result.imageOutput);
+      console.log("after POST Result 50", result);
+      if (result?.operationStatus === "successful") {
+        setOutput(result?.fileId);
         toast.success("Image generated successfully!");
       } else {
         setOutput("Error generating content. Please try again.");
@@ -62,194 +65,191 @@ export default function GeneratingLogoForm() {
     }
   };
 
+  console.log("output sate, 90", output);
   return (
     <div className="space-y-6">
       <form
         onSubmit={generatingLogoForm.handleSubmit((data) => handleSubmit(data))}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Side - Form */}
+          {/* Left Side - Form (Unchanged) */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Generating Logo</h3>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="brandName" className="mb-3 block">
-                  Brand Name
-                </Label>
-                <Input
-                  {...generatingLogoForm.register("brandName", {
-                    required: true,
-                  })}
-                  placeholder="Enter your Brand Name"
-                  className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="industry" className="mb-3 block">
-                  Your Industry
-                </Label>
-                <Controller
-                  name="yourIndustry"
-                  control={generatingLogoForm.control}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
-                        <SelectValue placeholder="Select your industry" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="retail">Retail</SelectItem>
-                        <SelectItem value="finance">Finance</SelectItem>
-                        <SelectItem value="healthcare">Healthcare</SelectItem>
-                        <SelectItem value="technology">Technology</SelectItem>
-                        <SelectItem value="education">Education</SelectItem>
-                        <SelectItem value="food-beverage">
-                          Food & Beverage
-                        </SelectItem>
-                        <SelectItem value="travel-tourism">
-                          Travel & Tourism
-                        </SelectItem>
-                        <SelectItem value="automotive">Automotive</SelectItem>
-                        <SelectItem value="real-estate">Real Estate</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="adPlatform" className="mb-3 block">
-                  Ad Platform
-                </Label>
-                <Controller
-                  name="adPlatform"
-                  control={generatingLogoForm.control}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
-                        <SelectValue placeholder="Select ad platform" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="facebook">Facebook</SelectItem>
-                        <SelectItem value="instagram">Instagram</SelectItem>
-                        <SelectItem value="linkedin">LinkedIn</SelectItem>
-                        <SelectItem value="google-ads">Google Ads</SelectItem>
-                        <SelectItem value="twitter">Twitter/X</SelectItem>
-                        <SelectItem value="youtube">YouTube</SelectItem>
-                        <SelectItem value="tiktok">TikTok</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="campaignObjective" className="mb-3 block">
-                  Campaign Objective
-                </Label>
-                <Controller
-                  name="campaignObjective"
-                  control={generatingLogoForm.control}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
-                        <SelectValue placeholder="Select campaign objective" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="brand-awareness">
-                          Brand Awareness
-                        </SelectItem>
-                        <SelectItem value="consideration">
-                          Consideration
-                        </SelectItem>
-                        <SelectItem value="conversion">Conversion</SelectItem>
-                        <SelectItem value="engagement">Engagement</SelectItem>
-                        <SelectItem value="traffic">Traffic</SelectItem>
-                        <SelectItem value="app-installs">
-                          App Installs
-                        </SelectItem>
-                        <SelectItem value="lead-generation">
-                          Lead Generation
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="targetAudience" className="mb-3 block">
-                  Target Audience
-                </Label>
-                <Textarea
-                  {...generatingLogoForm.register("targetAudience", {
-                    required: true,
-                  })}
-                  placeholder="Describe your target audience demographics, interests, and behaviors..."
-                  className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="keyMessages" className="mb-3 block">
-                  Key Messages
-                </Label>
-                <Textarea
-                  {...generatingLogoForm.register("keyMessages", {
-                    required: true,
-                  })}
-                  placeholder="List the main points you want to communicate in your ad..."
-                  className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="brandGuidelines" className="mb-3 block">
-                  Brand Guidelines
-                </Label>
-                <Textarea
-                  {...generatingLogoForm.register("brandGuidelines", {
-                    required: true,
-                  })}
-                  placeholder="Include any brand colors, tone of voice, restrictions, or specific requirements..."
-                  className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
-                />
-              </div>
-
-              <div>
-                <Label className="mb-3 block">Upscale Image</Label>
-                <Controller
-                  name="upscaleImage"
-                  control={generatingLogoForm.control}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="no">No</SelectItem>
-                        <SelectItem value="yes">Yes</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
-              >
-                {isLoading ? "Generating..." : "Generate Logo"}
-              </Button>
+            {/* ... rest of the form fields ... */}
+            <div>
+              <Label htmlFor="brandName" className="mb-3 block">
+                Brand Name
+              </Label>
+              <Input
+                {...generatingLogoForm.register("brandName", {
+                  required: true,
+                })}
+                placeholder="Enter your Brand Name"
+                className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
+              />
             </div>
-          </div>
 
-          {/* Right Side - Output */}
+            <div>
+              <Label htmlFor="industry" className="mb-3 block">
+                Your Industry
+              </Label>
+              <Controller
+                name="yourIndustry"
+                control={generatingLogoForm.control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                      <SelectValue placeholder="Select your industry" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="retail">Retail</SelectItem>
+                      <SelectItem value="finance">Finance</SelectItem>
+                      <SelectItem value="healthcare">Healthcare</SelectItem>
+                      <SelectItem value="technology">Technology</SelectItem>
+                      <SelectItem value="education">Education</SelectItem>
+                      <SelectItem value="food-beverage">
+                        Food & Beverage
+                      </SelectItem>
+                      <SelectItem value="travel-tourism">
+                        Travel & Tourism
+                      </SelectItem>
+                      <SelectItem value="automotive">Automotive</SelectItem>
+                      <SelectItem value="real-estate">Real Estate</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="adPlatform" className="mb-3 block">
+                Ad Platform
+              </Label>
+              <Controller
+                name="adPlatform"
+                control={generatingLogoForm.control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                      <SelectValue placeholder="Select ad platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="facebook">Facebook</SelectItem>
+                      <SelectItem value="instagram">Instagram</SelectItem>
+                      <SelectItem value="linkedin">LinkedIn</SelectItem>
+                      <SelectItem value="google-ads">Google Ads</SelectItem>
+                      <SelectItem value="twitter">Twitter/X</SelectItem>
+                      <SelectItem value="youtube">YouTube</SelectItem>
+                      <SelectItem value="tiktok">TikTok</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="campaignObjective" className="mb-3 block">
+                Campaign Objective
+              </Label>
+              <Controller
+                name="campaignObjective"
+                control={generatingLogoForm.control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                      <SelectValue placeholder="Select campaign objective" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="brand-awareness">
+                        Brand Awareness
+                      </SelectItem>
+                      <SelectItem value="consideration">
+                        Consideration
+                      </SelectItem>
+                      <SelectItem value="conversion">Conversion</SelectItem>
+                      <SelectItem value="engagement">Engagement</SelectItem>
+                      <SelectItem value="traffic">Traffic</SelectItem>
+                      <SelectItem value="app-installs">App Installs</SelectItem>
+                      <SelectItem value="lead-generation">
+                        Lead Generation
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="targetAudience" className="mb-3 block">
+                Target Audience
+              </Label>
+              <Textarea
+                {...generatingLogoForm.register("targetAudience", {
+                  required: true,
+                })}
+                placeholder="Describe your target audience demographics, interests, and behaviors..."
+                className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="keyMessages" className="mb-3 block">
+                Key Messages
+              </Label>
+              <Textarea
+                {...generatingLogoForm.register("keyMessages", {
+                  required: true,
+                })}
+                placeholder="List the main points you want to communicate in your ad..."
+                className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="brandGuidelines" className="mb-3 block">
+                Brand Guidelines
+              </Label>
+              <Textarea
+                {...generatingLogoForm.register("brandGuidelines", {
+                  required: true,
+                })}
+                placeholder="Include any brand colors, tone of voice, restrictions, or specific requirements..."
+                className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+              />
+            </div>
+
+            <div>
+              <Label className="mb-3 block">Upscale Image</Label>
+              <Controller
+                name="upscaleImage"
+                control={generatingLogoForm.control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="no">No</SelectItem>
+                      <SelectItem value="yes">Yes</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
+            >
+              {isLoading ? "Generating..." : "Generate Logo"}
+            </Button>
+          </div>
+          {/* Right Side - Output (Modified) */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Generated Output</h3>
             <div className="border-2 border-dashed text-nano-gray-400 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
@@ -260,13 +260,14 @@ export default function GeneratingLogoForm() {
                 </div>
               ) : output ? (
                 <div className="w-full">
-                  {typeof output === "string" && output.startsWith("http") ? (
+                  {typeof output === "string" ? (
                     <Image
-                      src={output}
+                      src={`https://drive.google.com/uc?export=view&id=${output}`}
                       alt="Generated content"
-                      width={500}
-                      height={500}
+                      width={400}
+                      height={400}
                       className="w-full h-auto rounded"
+                      unoptimized
                     />
                   ) : (
                     <pre className="whitespace-pre-wrap text-sm">{output}</pre>
