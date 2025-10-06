@@ -2,6 +2,7 @@ import NanoBananaNavbar from "@/components/Navbar";
 import AuthProvider from "@/providers/AuthProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,6 +34,7 @@ export default function RootLayout({
           <NanoBananaNavbar />
           {children}
         </AuthProvider>
+        <Toaster />
       </body>
     </html>
   );
