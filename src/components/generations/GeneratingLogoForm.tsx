@@ -49,7 +49,6 @@ export default function GeneratingLogoForm() {
       });
 
       const result = await response.json();
-      console.log("after POST Result 50", result);
       if (result?.operationStatus === "successful") {
         setOutput(result?.fileId);
         toast.success("Image generated successfully!");
@@ -253,24 +252,23 @@ export default function GeneratingLogoForm() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Generated Output</h3>
             <div className="border-2 border-dashed text-nano-gray-400 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
-              {isLoading ? (
+               {isLoading ? (
                 <div className="text-center">
                   <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
                   <p className="text-nano-gray-100">Generating content...</p>
                 </div>
               ) : output ? (
                 <div className="w-full">
-                  {typeof output === "string" ? (
+                  {output.includes("Error") ? (
+                    <p className="text-red-500 text-center">{output}</p>
+                  ) : (
                     <Image
-                      src={`https://drive.google.com/uc?export=view&id=${output}`}
+                      src={`https://drive.google.com/uc?id=${output}`}
                       alt="Generated content"
                       width={400}
                       height={400}
                       className="w-full h-auto rounded"
-                      unoptimized
                     />
-                  ) : (
-                    <pre className="whitespace-pre-wrap text-sm">{output}</pre>
                   )}
                 </div>
               ) : (
