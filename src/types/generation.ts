@@ -6,3 +6,13 @@ export type Generation = {
   thumbUrl?: string;
   createdAt: number;
 };
+
+
+export interface GenerationResponse {
+  operationStatus: string;
+  httpCode: string;
+  operationType: string;
+  imageOutput: string;      
+  fileId: string;
+  imageDownloadLink: string;  
+}

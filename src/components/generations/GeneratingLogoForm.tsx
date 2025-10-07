@@ -15,10 +15,13 @@ import { useState } from "react";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
+import { GenerationResponse } from "@/types/generation";
+import { Download } from "lucide-react";
 
 export default function GeneratingLogoForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [output, setOutput] = useState<string | null>(null);
+  const [output, setOutput] = useState<GenerationResponse | null>(null);
+  const [postError, setPostError] = useState<null | string>(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const generatingLogoForm = useForm({
@@ -50,21 +53,20 @@ export default function GeneratingLogoForm() {
 
       const result = await response.json();
       if (result?.operationStatus === "successful") {
-        setOutput(result?.fileId);
+        setOutput(result);
         toast.success("Image generated successfully!");
       } else {
-        setOutput("Error generating content. Please try again.");
+        setPostError("Error generating content. Please try again.");
         toast.error("Error generating content. Please try again.");
       }
     } catch {
-      setOutput("Error generating content. Please try again.");
+      setPostError("Error generating content. Please try again.");
       toast.error("Error generating content. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  console.log("output sate, 90", output);
   return (
     <div className="space-y-6">
       <form
@@ -252,23 +254,36 @@ export default function GeneratingLogoForm() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Generated Output</h3>
             <div className="border-2 border-dashed text-nano-gray-400 rounded-lg p-4 min-h-[400px] bg-nano-olive-700 flex items-center justify-center">
-               {isLoading ? (
+              {isLoading ? (
                 <div className="text-center">
                   <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
                   <p className="text-nano-gray-100">Generating content...</p>
                 </div>
               ) : output ? (
                 <div className="w-full">
-                  {output.includes("Error") ? (
-                    <p className="text-red-500 text-center">{output}</p>
+                  {postError?.includes("Error") ? (
+                    <p className="text-red-500 text-center">{postError}</p>
                   ) : (
-                    <Image
-                      src={`https://drive.google.com/uc?id=${output}`}
-                      alt="Generated content"
-                      width={400}
-                      height={400}
-                      className="w-full h-auto rounded"
-                    />
+                    <div className="relative w-full ">
+                      <a
+                        href={output?.imageDownloadLink}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute top-2 right-2 z-10 bg-emerald-500 hover:bg-emerald-600 text-black hover:text-white p-2 rounded-full "
+                        title="Download Image"
+                      >
+                        <Download className="w-5 h-5" />
+                      </a>
+
+                      <Image
+                        src={`https://drive.google.com/uc?id=${output?.fileId}`}
+                        alt="Generated content"
+                        width={400}
+                        height={400}
+                        className="w-full h-auto rounded"
+                      />
+                    </div>
                   )}
                 </div>
               ) : (
