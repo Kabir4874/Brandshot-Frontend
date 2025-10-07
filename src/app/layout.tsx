@@ -1,5 +1,6 @@
 import NanoBananaNavbar from "@/components/Navbar";
 import AuthProvider from "@/providers/AuthProvider";
+import ThemeProvider from "@/providers/ThemeProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
@@ -26,13 +27,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <NanoBananaNavbar />
-          {children}
+          <ThemeProvider>
+            <NanoBananaNavbar />
+            {children}
+          </ThemeProvider>
         </AuthProvider>
         <Toaster />
       </body>

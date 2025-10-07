@@ -88,8 +88,6 @@ export default function DashboardHeader() {
     setCustomTag("");
   };
 
-
-
   async function handleCreate() {
     if (!user) return;
     if (!name.trim()) {
@@ -118,9 +116,9 @@ export default function DashboardHeader() {
   }
 
   return (
-    <div className="w-full bg-nano-deep-950 text-nano-white">
+    <div className="w-full bg-white text-nano-deep-900 dark:bg-nano-deep-950 dark:text-nano-white">
       <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-4">
-        {/* Title + CTAs (added subtle 'Archived' link) */}
+        {/* Title + CTAs */}
         <div className="mb-3 flex items-center justify-between">
           <h1 className="text-3xl font-extrabold leading-none tracking-tight">
             Dashboard
@@ -130,7 +128,7 @@ export default function DashboardHeader() {
             {/* Archived Page */}
             <Link
               href="/archived"
-              className="h-8 inline-flex items-center rounded-md bg-nano-forest-800/60 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/80"
+              className="h-8 inline-flex items-center rounded-md px-3 text-[13px] font-medium bg-nano-gray-100 text-nano-deep-900 hover:bg-nano-gray-100/80 dark:bg-nano-forest-800/60 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/80"
             >
               Archived
             </Link>
@@ -138,7 +136,7 @@ export default function DashboardHeader() {
             {/* Create */}
             <Button
               size="sm"
-              className="h-8 rounded-md bg-nano-forest-800 px-3 text-[13px] font-semibold text-nano-gray-100 hover:bg-nano-forest-800/95"
+              className="h-8 rounded-md px-3 text-[13px] font-semibold bg-nano-deep-900 text-white hover:bg-nano-deep-900/95 dark:bg-nano-forest-800 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/95"
               onClick={() => setOpen(true)}
             >
               Create New Project
@@ -150,14 +148,14 @@ export default function DashboardHeader() {
         <div className="relative">
           <Search
             aria-hidden
-            className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-nano-mint/55"
+            className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-nano-deep-900/45 dark:text-nano-mint/55"
           />
           <Input
             aria-label="Search projects"
             placeholder="Search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="h-11 md:h-12 w-full rounded-lg border-0 bg-nano-forest-800 pl-11 pr-4 text-[14px] text-nano-white placeholder:text-nano-mint/60 shadow-none focus-visible:ring-0"
+            className="h-11 md:h-12 w-full rounded-lg border border-nano-gray-100 bg-white pl-11 pr-4 text-[14px] text-nano-deep-900 placeholder:text-nano-deep-900/60 shadow-none focus-visible:ring-0 focus-visible:border-nano-deep-900/20 dark:border-0 dark:bg-nano-forest-800 dark:text-nano-white dark:placeholder:text-nano-mint/60"
           />
         </div>
 
@@ -169,7 +167,7 @@ export default function DashboardHeader() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex h-9 items-center gap-2 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95 hover:text-nano-gray-100"
+                className="flex h-9 items-center gap-2 rounded-md px-3 text-[13px] font-medium bg-nano-gray-100 text-nano-deep-900 hover:bg-nano-gray-100/90 dark:bg-nano-forest-800 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/95"
               >
                 <span>Project Tags</span>
                 <ChevronDown className="h-4 w-4 opacity-90" />
@@ -177,17 +175,17 @@ export default function DashboardHeader() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
-              className="w-48 border-0 bg-nano-forest-800 p-1 text-nano-gray-100 shadow-md"
+              className="w-48 border border-nano-gray-100 bg-white p-1 text-nano-deep-900 shadow-md dark:border-0 dark:bg-nano-forest-800 dark:text-nano-gray-100"
             >
               <DropdownMenuLabel className="text-[12px] opacity-70">
                 Filter by tags
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-nano-deep-900" />
+              <DropdownMenuSeparator className="bg-nano-gray-100 dark:bg-nano-deep-900" />
               <DropdownMenuCheckboxItem
                 key="All"
                 checked={activeTags.includes("All")}
                 onCheckedChange={() => toggleFilterTag("All")}
-                className="cursor-pointer rounded-[6px] text-[13px] focus:bg-nano-deep-900 focus:text-nano-gray-100 data-[state=checked]:bg-nano-deep-900"
+                className="cursor-pointer rounded-[6px] text-[13px] focus:bg-nano-gray-100/70 focus:text-nano-deep-900 data-[state=checked]:bg-nano-gray-100/70 dark:focus:bg-nano-deep-900 dark:focus:text-nano-gray-100 dark:data-[state=checked]:bg-nano-deep-900"
               >
                 All
               </DropdownMenuCheckboxItem>
@@ -196,7 +194,7 @@ export default function DashboardHeader() {
                   key={t}
                   checked={activeTags.includes(t)}
                   onCheckedChange={() => toggleFilterTag(t)}
-                  className="cursor-pointer rounded-[6px] text-[13px] focus:bg-nano-deep-900 focus:text-nano-gray-100 data-[state=checked]:bg-nano-deep-900"
+                  className="cursor-pointer rounded-[6px] text-[13px] focus:bg-nano-gray-100/70 focus:text-nano-deep-900 data-[state=checked]:bg-nano-gray-100/70 dark:focus:bg-nano-deep-900 dark:focus:text-nano-gray-100 dark:data-[state=checked]:bg-nano-deep-900"
                 >
                   {t}
                 </DropdownMenuCheckboxItem>
@@ -210,7 +208,7 @@ export default function DashboardHeader() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex h-9 items-center gap-2 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95 hover:text-nano-gray-100"
+                className="flex h-9 items-center gap-2 rounded-md px-3 text-[13px] font-medium bg-nano-gray-100 text-nano-deep-900 hover:bg-nano-gray-100/90 dark:bg-nano-forest-800 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/95"
               >
                 <span>Creation Date</span>
                 <ChevronDown className="h-4 w-4 opacity-90" />
@@ -218,12 +216,12 @@ export default function DashboardHeader() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
-              className="w-52 border-0 bg-nano-forest-800 p-1 text-nano-gray-100 shadow-md"
+              className="w-52 border border-nano-gray-100 bg-white p-1 text-nano-deep-900 shadow-md dark:border-0 dark:bg-nano-forest-800 dark:text-nano-gray-100"
             >
               <DropdownMenuLabel className="text-[12px] opacity-70">
                 Sort / Range
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-nano-deep-900" />
+              <DropdownMenuSeparator className="bg-nano-gray-100 dark:bg-nano-deep-900" />
               <DropdownMenuRadioGroup
                 value={dateSort}
                 onValueChange={(value) => setDateSort(value as DateSort)}
@@ -237,7 +235,7 @@ export default function DashboardHeader() {
                   <DropdownMenuRadioItem
                     key={o.key}
                     value={o.key}
-                    className="cursor-pointer rounded-[6px] text-[13px] focus:bg-nano-deep-900 focus:text-nano-gray-100 data-[state=checked]:bg-nano-deep-900"
+                    className="cursor-pointer rounded-[6px] text-[13px] focus:bg-nano-gray-100/70 focus:text-nano-deep-900 data-[state=checked]:bg-nano-gray-100/70 dark:focus:bg-nano-deep-900 dark:focus:text-nano-gray-100 dark:data-[state=checked]:bg-nano-deep-900"
                   >
                     {o.label}
                   </DropdownMenuRadioItem>
@@ -248,46 +246,50 @@ export default function DashboardHeader() {
         </div>
       </div>
 
-      {/* Create Project dialog — unchanged except for the code above */}
+      {/* Create Project dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="border-nano-forest-800 bg-nano-olive-700 text-nano-white">
+        <DialogContent className="border border-nano-gray-100 bg-white text-nano-deep-900 dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-white">
           <DialogHeader>
-            <DialogTitle className="text-white">Create Project</DialogTitle>
+            <DialogTitle className="text-nano-deep-900 dark:text-white">
+              Create Project
+            </DialogTitle>
           </DialogHeader>
 
           {err && (
-            <div className="rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-[13px] text-red-200">
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
               {err}
             </div>
           )}
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-[13px] text-nano-gray-100">
+              <Label className="text-[13px] text-nano-deep-900 dark:text-nano-gray-100">
                 Project name
               </Label>
               <Input
                 placeholder="e.g. Autumn Launch"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="h-11 rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-nano-gray-100/60 focus-visible:ring-0"
+                className="h-11 rounded-lg border border-nano-gray-100 bg-white text-[14px] text-nano-deep-900 placeholder:text-nano-deep-900/60 focus-visible:ring-0 focus-visible:border-nano-deep-900/20 dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-gray-100 dark:placeholder:text-nano-gray-100/60"
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[13px] text-nano-gray-100">
+              <Label className="text-[13px] text-nano-deep-900 dark:text-nano-gray-100">
                 Client / Site
               </Label>
               <Input
                 placeholder="e.g. nanobanana.com"
                 value={client}
                 onChange={(e) => setClient(e.target.value)}
-                className="h-11 rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-nano-gray-100/60 focus-visible:ring-0"
+                className="h-11 rounded-lg border border-nano-gray-100 bg-white text-[14px] text-nano-deep-900 placeholder:text-nano-deep-900/60 focus-visible:ring-0 focus-visible:border-nano-deep-900/20 dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-gray-100 dark:placeholder:text-nano-gray-100/60"
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[13px] text-nano-gray-100">Tags</Label>
+              <Label className="text-[13px] text-nano-deep-900 dark:text-nano-gray-100">
+                Tags
+              </Label>
               <div className="flex flex-wrap gap-2">
                 {TAG_OPTIONS.map((t) => {
                   const active = selTags.includes(t);
@@ -299,8 +301,8 @@ export default function DashboardHeader() {
                       className={[
                         "h-8 rounded-md px-3 text-[13px] font-medium transition-colors",
                         active
-                          ? "bg-nano-forest-800 text-nano-gray-100"
-                          : "bg-nano-olive-700 text-nano-mint hover:bg-nano-deep-900",
+                          ? "bg-nano-deep-900 text-white dark:bg-nano-forest-800 dark:text-nano-gray-100"
+                          : "bg-nano-gray-100 text-nano-deep-900 hover:bg-nano-gray-100/80 dark:bg-nano-olive-700 dark:text-nano-mint dark:hover:bg-nano-deep-900",
                       ].join(" ")}
                     >
                       {t}
@@ -320,12 +322,12 @@ export default function DashboardHeader() {
                       addCustomTag();
                     }
                   }}
-                  className="h-10 max-w-[260px] rounded-md border border-nano-forest-800 bg-nano-olive-700 text-[13px] text-nano-gray-100 placeholder:text-nano-gray-100/60 focus-visible:ring-0"
+                  className="h-10 max-w-[260px] rounded-md border border-nano-gray-100 bg-white text-[13px] text-nano-deep-900 placeholder:text-nano-deep-900/60 focus-visible:ring-0 focus-visible:border-nano-deep-900/20 dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-gray-100 dark:placeholder:text-nano-gray-100/60"
                 />
                 <Button
                   type="button"
                   onClick={addCustomTag}
-                  className="h-9 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95"
+                  className="h-9 rounded-md px-3 text-[13px] font-medium bg-nano-deep-900 text-white hover:bg-nano-deep-900/95 dark:bg-nano-forest-800 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/95"
                 >
                   Add
                 </Button>
@@ -336,7 +338,7 @@ export default function DashboardHeader() {
           <DialogFooter>
             <Button
               variant="ghost"
-              className="h-9 rounded-md bg-transparent px-3 text-[13px] text-nano-mint hover:bg-nano-deep-900"
+              className="h-9 rounded-md bg-transparent px-3 text-[13px] text-nano-deep-900 hover:bg-nano-gray-100 dark:text-nano-mint dark:hover:bg-nano-deep-900"
               onClick={() => setOpen(false)}
               disabled={busy}
             >
