@@ -45,7 +45,7 @@ export default function AdCreativeForm() {
       });
 
       const result = await response.json();
-      if (result.operationStatus === "sucessfull") {
+      if (result.operationStatus === "successful") {
         setOutput(result.imageOutput);
         toast.success("Image generated successfully!");
       } else {
