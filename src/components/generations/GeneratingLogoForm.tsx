@@ -24,7 +24,7 @@ export default function GeneratingLogoForm() {
   const [postError, setPostError] = useState<null | string>(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const generatingLogoForm = useForm({
+  /*   const generatingLogoForm = useForm({
     defaultValues: {
       brandName: "Cash Sol",
       yourIndustry: "",
@@ -36,6 +36,20 @@ export default function GeneratingLogoForm() {
         "Simplify your finance workflow with our AI-powered tools. Save time and boost productivity.",
       brandGuidelines:
         "Use primary blue (#1E90FF), secondary dark gray (#222222), modern sans-serif fonts, and a professional, ambitious tone.",
+      upscaleImage: "no",
+    },
+  }); */
+
+  const generatingLogoForm = useForm({
+    defaultValues: {
+      brandName: "",
+      yourIndustry: "",
+      operationType: "Brand Logo",
+      adPlatform: "",
+      campaignObjective: "",
+      targetAudience: "",
+      keyMessages: "",
+      brandGuidelines: "",
       upscaleImage: "no",
     },
   });
@@ -95,6 +109,11 @@ export default function GeneratingLogoForm() {
                 className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
                 disabled={isLoading}
               />
+              {generatingLogoForm.formState.errors.brandName && (
+                <p className="text-red-500 text-xs mt-1">
+                  Brand name is required
+                </p>
+              )}
             </div>
 
             <div>
@@ -132,6 +151,11 @@ export default function GeneratingLogoForm() {
                   </Select>
                 )}
               />
+              {generatingLogoForm.formState.errors.yourIndustry && (
+                <p className="text-red-500 text-xs mt-1">
+                  Please select your industry
+                </p>
+              )}
             </div>
 
             <div>
@@ -163,6 +187,11 @@ export default function GeneratingLogoForm() {
                   </Select>
                 )}
               />
+              {generatingLogoForm.formState.errors.adPlatform && (
+                <p className="text-red-500 text-xs mt-1">
+                  Please select an ad platform
+                </p>
+              )}
             </div>
 
             <div>
@@ -200,6 +229,11 @@ export default function GeneratingLogoForm() {
                   </Select>
                 )}
               />
+              {generatingLogoForm.formState.errors.campaignObjective && (
+                <p className="text-red-500 text-xs mt-1">
+                  Please select a campaign objective
+                </p>
+              )}
             </div>
 
             <div>
@@ -214,6 +248,11 @@ export default function GeneratingLogoForm() {
                 className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
                 disabled={isLoading}
               />
+              {generatingLogoForm.formState.errors.targetAudience && (
+                <p className="text-red-500 text-xs mt-1">
+                  Target audience is required
+                </p>
+              )}
             </div>
 
             <div>
@@ -228,6 +267,11 @@ export default function GeneratingLogoForm() {
                 className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
                 disabled={isLoading}
               />
+              {generatingLogoForm.formState.errors.keyMessages && (
+                <p className="text-red-500 text-xs mt-1">
+                  Key messages are required
+                </p>
+              )}
             </div>
 
             <div>
@@ -242,6 +286,11 @@ export default function GeneratingLogoForm() {
                 className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
                 disabled={isLoading}
               />
+              {generatingLogoForm.formState.errors.brandGuidelines && (
+                <p className="text-red-500 text-xs mt-1">
+                  Brand guidelines are required
+                </p>
+              )}
             </div>
 
             <div>
@@ -288,7 +337,11 @@ export default function GeneratingLogoForm() {
                 >
                   {isLoading ? "Generating..." : "Generate Logo"}
                 </Button>
-                <Button type="button" onClick={handleReset} className="w-[18%] bg-red-500 text-black hover:bg-red-500/90 hover:text-white cursor-pointer">
+                <Button
+                  type="button"
+                  onClick={handleReset}
+                  className="w-[18%] bg-red-500 text-black hover:bg-red-500/90 hover:text-white cursor-pointer"
+                >
                   Reset
                 </Button>
               </div>
