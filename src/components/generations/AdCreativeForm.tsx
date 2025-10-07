@@ -14,10 +14,13 @@ import { useState } from "react";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
+import { GenerationResponse } from "@/types/generation";
+import { Download } from "lucide-react";
 
 export default function AdCreativeForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [output, setOutput] = useState<string | null>(null);
+  const [output, setOutput] = useState<GenerationResponse | null>(null);
+  const [postError, setPostError] = useState<null | string>(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const adCreativeForm = useForm({
@@ -26,9 +29,11 @@ export default function AdCreativeForm() {
       operationType: "Ad Poster",
       adPlatform: "",
       campaignObjective: "",
-      targetAudience: "",
-      keyMessages: "",
-      brandGuidelines: "",
+      targetAudience: "Small business owners, 25-45 years old",
+      keyMessages:
+        "Simplify your finance workflow with our AI-powered tools. Save time and boost productivity.",
+      brandGuidelines:
+        "Use primary blue (#1E90FF), secondary dark gray (#222222), modern sans-serif fonts, and a professional, ambitious tone.",
       upscaleImage: "no",
     },
   });
@@ -46,18 +51,24 @@ export default function AdCreativeForm() {
 
       const result = await response.json();
       if (result.operationStatus === "successful") {
-        setOutput(result.imageOutput);
-        toast.success("Image generated successfully!");
+        setOutput(result);
+        toast.success("Ad Creative generated successfully!");
       } else {
-        setOutput("Error generating content. Please try again.");
+        setPostError("Error generating content. Please try again.");
         toast.error("Error generating content. Please try again.");
       }
     } catch {
-      setOutput("Error generating content. Please try again.");
+      setPostError("Error generating content. Please try again.");
       toast.error("Error generating content. Please try again.");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleReset = () => {
+    adCreativeForm.reset();
+    setOutput(null);
+    setPostError(null);
   };
 
   return (
@@ -79,7 +90,11 @@ export default function AdCreativeForm() {
                   control={adCreativeForm.control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isLoading}
+                    >
                       <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
                         <SelectValue placeholder="Select your industry" />
                       </SelectTrigger>
@@ -101,6 +116,11 @@ export default function AdCreativeForm() {
                     </Select>
                   )}
                 />
+                {adCreativeForm.formState.errors.yourIndustry && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Please select your industry
+                  </p>
+                )}
               </div>
 
               <div>
@@ -112,7 +132,11 @@ export default function AdCreativeForm() {
                   control={adCreativeForm.control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isLoading}
+                    >
                       <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
                         <SelectValue placeholder="Select ad platform" />
                       </SelectTrigger>
@@ -128,6 +152,11 @@ export default function AdCreativeForm() {
                     </Select>
                   )}
                 />
+                {adCreativeForm.formState.errors.adPlatform && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Please select an ad platform
+                  </p>
+                )}
               </div>
 
               <div>
@@ -139,7 +168,11 @@ export default function AdCreativeForm() {
                   control={adCreativeForm.control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isLoading}
+                    >
                       <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
                         <SelectValue placeholder="Select campaign objective" />
                       </SelectTrigger>
@@ -163,6 +196,11 @@ export default function AdCreativeForm() {
                     </Select>
                   )}
                 />
+                {adCreativeForm.formState.errors.campaignObjective && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Please select a campaign objective
+                  </p>
+                )}
               </div>
 
               <div>
@@ -175,7 +213,13 @@ export default function AdCreativeForm() {
                   })}
                   placeholder="Describe your target audience demographics, interests, and behaviors..."
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px] placeholder-red-400"
+                  disabled={isLoading}
                 />
+                {adCreativeForm.formState.errors.targetAudience && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Target audience is required
+                  </p>
+                )}
               </div>
 
               <div>
@@ -188,7 +232,13 @@ export default function AdCreativeForm() {
                   })}
                   placeholder="List the main points you want to communicate in your ad..."
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                  disabled={isLoading}
                 />
+                {adCreativeForm.formState.errors.keyMessages && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Key messages are required
+                  </p>
+                )}
               </div>
 
               <div>
@@ -201,7 +251,13 @@ export default function AdCreativeForm() {
                   })}
                   placeholder="Include any brand colors, tone of voice, restrictions, or specific requirements..."
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                  disabled={isLoading}
                 />
+                {adCreativeForm.formState.errors.brandGuidelines && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Brand guidelines are required
+                  </p>
+                )}
               </div>
 
               <div>
@@ -211,7 +267,11 @@ export default function AdCreativeForm() {
                   control={adCreativeForm.control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isLoading}
+                    >
                       <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
                         <SelectValue />
                       </SelectTrigger>
@@ -223,14 +283,36 @@ export default function AdCreativeForm() {
                   )}
                 />
               </div>
+              {/* ---------------Button Before Generation-------------- */}
+              {!output && !isLoading && (
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90 cursor-pointer"
+                >
+                  {isLoading ? "Generating..." : "Generate Ad Creative"}
+                </Button>
+              )}
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
-              >
-                {isLoading ? "Generating..." : "Generate Ad Creative"}
-              </Button>
+              {/* ---------------Button After Generation-------------- */}
+              {output && !isLoading && (
+                <div className="flex items-center justify-between w-full gap-2">
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-[79%] bg-emerald-500 text-black hover:bg-emerald-500/90 cursor-pointer"
+                  >
+                    {isLoading ? "Generating..." : "Generate Ad Creative"}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleReset}
+                    className="w-[18%] bg-red-500 text-black hover:bg-red-500/90 hover:text-white cursor-pointer"
+                  >
+                    Reset
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -245,16 +327,29 @@ export default function AdCreativeForm() {
                 </div>
               ) : output ? (
                 <div className="w-full">
-                  {typeof output === "string" && output.startsWith("http") ? (
-                    <Image
-                      src={output}
-                      alt="Generated content"
-                      width={500}
-                      height={500}
-                      className="w-full h-auto rounded"
-                    />
+                  {postError?.includes("Error") ? (
+                    <p className="text-red-500 text-center">{postError}</p>
                   ) : (
-                    <pre className="whitespace-pre-wrap text-sm">{output}</pre>
+                    <div className="relative w-full ">
+                      <a
+                        href={output?.imageDownloadLink}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute top-2 right-2 z-10 bg-emerald-500 hover:bg-emerald-600 text-black hover:text-white p-2 rounded-full "
+                        title="Download Image"
+                      >
+                        <Download className="w-5 h-5" />
+                      </a>
+
+                      <Image
+                        src={`https://drive.google.com/uc?id=${output?.fileId}`}
+                        alt="Generated content"
+                        width={400}
+                        height={400}
+                        className="w-full h-auto rounded"
+                      />
+                    </div>
                   )}
                 </div>
               ) : (
