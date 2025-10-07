@@ -24,7 +24,7 @@ export default function GeneratingLogoForm() {
   const [postError, setPostError] = useState<null | string>(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-    const generatingLogoForm = useForm({
+  const generatingLogoForm = useForm({
     defaultValues: {
       brandName: "Cash Sol",
       yourIndustry: "",
@@ -40,7 +40,7 @@ export default function GeneratingLogoForm() {
     },
   });
 
-/*   const generatingLogoForm = useForm({
+  /*   const generatingLogoForm = useForm({
     defaultValues: {
       brandName: "",
       yourIndustry: "",
@@ -316,8 +316,9 @@ export default function GeneratingLogoForm() {
                 )}
               />
             </div>
-            {/* ---------------Button Before Generation-------------- */}
-            {!output && !isLoading && (
+            {/* ---------------Buttons Section-------------- */}
+            {!output ? (
+              // Show single Generate button before first generation (including while loading)
               <Button
                 type="submit"
                 disabled={isLoading}
@@ -325,10 +326,8 @@ export default function GeneratingLogoForm() {
               >
                 {isLoading ? "Generating..." : "Generate Logo"}
               </Button>
-            )}
-
-            {/* ---------------Button After Generation-------------- */}
-            {output && !isLoading && (
+            ) : (
+              // After first generation, show Generate + Reset buttons
               <div className="flex items-center justify-between w-full gap-2">
                 <Button
                   type="submit"

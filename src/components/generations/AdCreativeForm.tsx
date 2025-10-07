@@ -283,8 +283,9 @@ export default function AdCreativeForm() {
                   )}
                 />
               </div>
-              {/* ---------------Button Before Generation-------------- */}
-              {!output && !isLoading && (
+              {/* ---------------Buttons Section-------------- */}
+              {!output ? (
+                // Show single Generate button before first generation (including while loading)
                 <Button
                   type="submit"
                   disabled={isLoading}
@@ -292,10 +293,8 @@ export default function AdCreativeForm() {
                 >
                   {isLoading ? "Generating..." : "Generate Ad Creative"}
                 </Button>
-              )}
-
-              {/* ---------------Button After Generation-------------- */}
-              {output && !isLoading && (
+              ) : (
+                // After first generation, show Generate + Reset buttons
                 <div className="flex items-center justify-between w-full gap-2">
                   <Button
                     type="submit"
