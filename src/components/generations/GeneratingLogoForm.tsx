@@ -67,6 +67,12 @@ export default function GeneratingLogoForm() {
     }
   };
 
+  const handleReset = () => {
+    generatingLogoForm.reset();
+    setOutput(null);
+    setPostError(null);
+  };
+
   return (
     <div className="space-y-6">
       <form
@@ -87,6 +93,7 @@ export default function GeneratingLogoForm() {
                 })}
                 placeholder="Enter your Brand Name"
                 className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
+                disabled={isLoading}
               />
             </div>
 
@@ -99,7 +106,11 @@ export default function GeneratingLogoForm() {
                 control={generatingLogoForm.control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isLoading}
+                  >
                     <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
                       <SelectValue placeholder="Select your industry" />
                     </SelectTrigger>
@@ -132,7 +143,11 @@ export default function GeneratingLogoForm() {
                 control={generatingLogoForm.control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isLoading}
+                  >
                     <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
                       <SelectValue placeholder="Select ad platform" />
                     </SelectTrigger>
@@ -159,7 +174,11 @@ export default function GeneratingLogoForm() {
                 control={generatingLogoForm.control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isLoading}
+                  >
                     <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
                       <SelectValue placeholder="Select campaign objective" />
                     </SelectTrigger>
@@ -193,6 +212,7 @@ export default function GeneratingLogoForm() {
                 })}
                 placeholder="Describe your target audience demographics, interests, and behaviors..."
                 className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                disabled={isLoading}
               />
             </div>
 
@@ -206,6 +226,7 @@ export default function GeneratingLogoForm() {
                 })}
                 placeholder="List the main points you want to communicate in your ad..."
                 className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                disabled={isLoading}
               />
             </div>
 
@@ -219,6 +240,7 @@ export default function GeneratingLogoForm() {
                 })}
                 placeholder="Include any brand colors, tone of voice, restrictions, or specific requirements..."
                 className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
+                disabled={isLoading}
               />
             </div>
 
@@ -229,7 +251,11 @@ export default function GeneratingLogoForm() {
                 control={generatingLogoForm.control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isLoading}
+                  >
                     <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
                       <SelectValue />
                     </SelectTrigger>
@@ -241,14 +267,32 @@ export default function GeneratingLogoForm() {
                 )}
               />
             </div>
+            {/* ---------------Button Before Generation-------------- */}
+            {!output && !isLoading && (
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90 cursor-pointer"
+              >
+                {isLoading ? "Generating..." : "Generate Logo"}
+              </Button>
+            )}
 
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
-            >
-              {isLoading ? "Generating..." : "Generate Logo"}
-            </Button>
+            {/* ---------------Button After Generation-------------- */}
+            {output && !isLoading && (
+              <div className="flex items-center justify-between w-full gap-2">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-[79%] bg-emerald-500 text-black hover:bg-emerald-500/90 cursor-pointer"
+                >
+                  {isLoading ? "Generating..." : "Generate Logo"}
+                </Button>
+                <Button type="button" onClick={handleReset} className="w-[18%] bg-red-500 text-black hover:bg-red-500/90 hover:text-white cursor-pointer">
+                  Reset
+                </Button>
+              </div>
+            )}
           </div>
           {/* Right Side - Output (Modified) */}
           <div className="space-y-4">
