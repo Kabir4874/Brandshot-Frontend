@@ -2,8 +2,8 @@ import NanoBananaNavbar from "@/components/Navbar";
 import AuthProvider from "@/providers/AuthProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <AuthProvider>
+          <NanoBananaNavbar />
+          {children}
+        </AuthProvider>
         <Toaster />
-        <NanoBananaNavbar />
-        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      match /presets/{presetId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+  }
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // USERS
+    // Each user can create/read/update ONLY their own doc and subcollections.
+    match /users/{uid} {
+      allow create: if signedIn() && request.auth.uid == uid;               // first write after sign-in
+      allow read, update: if signedIn() && request.auth.uid == uid;
+
+      // Prompt presets: users/{uid}/presets/{category}
+      match /presets/{category} {
+        allow read, write: if signedIn() && request.auth.uid == uid;
+      }
+    }
+
+    // PROJECTS (top-level collection)
+    // Document must carry an ownerId field equal to auth.uid.
+    match /projects/{projectId} {
+      // Create: ownerId must be the caller
+      allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid;
+
+      // Read/update/delete only if you own it
+      allow read, update, delete: if signedIn() && resource.data.ownerId == request.auth.uid;
+
+      // Subcollection: generations
+      match /generations/{genId} {
+        // Create generations only if the parent project is owned by the caller
+        allow create: if signedIn() && get(/databases/$(database)/documents/projects/$(projectId)).data.ownerId == request.auth.uid;
+
+        // Read/update/delete generations only if owns parent project
+        allow read, update, delete: if signedIn() && get(/databases/$(database)/documents/projects/$(projectId)).data.ownerId == request.auth.uid;
+      }
+    }
+  }
+}
