@@ -89,25 +89,30 @@ export default function ProductPhotographyForm() {
                   Product Photo
                 </Label>
 
-                {/*------------------------------ */}
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      productPhotographyForm.setValue("photo", file, {
-                        shouldValidate: true,
-                      });
-                    }
-                  }}
-                  className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
-                  disabled={isLoading}
+                <Controller
+                  name="photo"
+                  control={productPhotographyForm.control}
+                  rules={{ required: "Product photo is required" }}
+                  render={({ field }) => (
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        field.onChange(file);
+                      }}
+                      className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
+                      disabled={isLoading}
+                    />
+                  )}
                 />
 
                 {productPhotographyForm.formState.errors.photo && (
                   <p className="text-red-500 text-xs mt-1">
-                    Product photo is required
+                    {
+                      productPhotographyForm.formState.errors.photo
+                        .message as string
+                    }
                   </p>
                 )}
               </div>
@@ -134,7 +139,7 @@ export default function ProductPhotographyForm() {
                     </Select>
                   )}
                 />
-                 {productPhotographyForm.formState.errors.upscaleImage && (
+                {productPhotographyForm.formState.errors.upscaleImage && (
                   <p className="text-red-500 text-xs mt-1">
                     Please select Image Upscale needed or not
                   </p>
@@ -143,7 +148,6 @@ export default function ProductPhotographyForm() {
 
               {/* ---------------Buttons Section-------------- */}
               {!output ? (
-                // Show single Generate button before first generation (including while loading)
                 <Button
                   type="submit"
                   disabled={isLoading}
