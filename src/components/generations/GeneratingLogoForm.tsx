@@ -315,6 +315,11 @@ export default function GeneratingLogoForm() {
                   </Select>
                 )}
               />
+               {generatingLogoForm.formState.errors.upscaleImage && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Please select Image Upscale needed or not
+                  </p>
+                )}
             </div>
             {/* ---------------Buttons Section-------------- */}
             {!output ? (
