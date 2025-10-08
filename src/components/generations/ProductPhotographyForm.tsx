@@ -34,23 +34,22 @@ export default function ProductPhotographyForm() {
   const handleSubmit = async (formData: any) => {
     setIsLoading(true);
     setOutput(null);
+    setPostError(null);
 
     try {
-      const dataToSend: any = new FormData();
-      Object.keys(formData).forEach((key) => {
-        if (key === "photo" && formData[key]) {
-          dataToSend.append(key, formData[key][0]);
-        } else {
-          dataToSend.append(key, formData[key]);
-        }
-      });
+      const dataToSend = new FormData();
+      dataToSend.append("operationType", formData.operationType);
+      dataToSend.append("upscaleImage", formData.upscaleImage);
+      if (formData.photo) {
+        dataToSend.append("photo", formData.photo);
+      }
       const response = await fetch(backendUrl as string, {
         method: "POST",
-
         body: dataToSend,
       });
 
-      const result = await response.json();
+      const result = await response?.json();
+
       if (result?.operationStatus === "successful") {
         setOutput(result);
         toast.success("Product Photo generated successfully!");
@@ -58,7 +57,8 @@ export default function ProductPhotographyForm() {
         setPostError("Error generating content. Please try again.");
         toast.error("Error generating content. Please try again.");
       }
-    } catch {
+    } catch (error) {
+      console.error(error);
       setPostError("Error generating content. Please try again.");
       toast.error("Error generating content. Please try again.");
     } finally {
@@ -88,15 +88,23 @@ export default function ProductPhotographyForm() {
                 <Label htmlFor="photo" className="mb-3 block">
                   Product Photo
                 </Label>
+
+                {/*------------------------------ */}
                 <Input
                   type="file"
                   accept="image/*"
-                  {...productPhotographyForm.register("photo", {
-                    required: true,
-                  })}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      productPhotographyForm.setValue("photo", file, {
+                        shouldValidate: true,
+                      });
+                    }
+                  }}
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
                   disabled={isLoading}
                 />
+
                 {productPhotographyForm.formState.errors.photo && (
                   <p className="text-red-500 text-xs mt-1">
                     Product photo is required
@@ -139,7 +147,6 @@ export default function ProductPhotographyForm() {
                   {isLoading ? "Generating..." : "Generate Product Photo"}
                 </Button>
               ) : (
-                // After first generation, show Generate + Reset buttons
                 <div className="flex items-center justify-between w-full gap-2">
                   <Button
                     type="submit"
