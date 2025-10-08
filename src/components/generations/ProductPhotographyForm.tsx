@@ -146,6 +146,7 @@ export default function ProductPhotographyForm() {
                               }
                             }}
                             className="absolute top-2 right-2 z-10 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                            disabled={isLoading}
                           >
                             <X className="h-4 w-4" />
                           </button>

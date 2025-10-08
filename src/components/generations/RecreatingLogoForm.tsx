@@ -11,17 +11,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
 import { GenerationResponse } from "@/types/generation";
-import { Download } from "lucide-react";
+import { Download, Plus, X } from "lucide-react";
 
 export default function RecreatingLogoForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState<GenerationResponse | null>(null);
   const [postError, setPostError] = useState<null | string>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const recreatingLogoForm = useForm({
@@ -73,6 +75,10 @@ export default function RecreatingLogoForm() {
     recreatingLogoForm.reset();
     setOutput(null);
     setPostError(null);
+    setImagePreview(null);
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
   };
 
   return (
@@ -80,34 +86,89 @@ export default function RecreatingLogoForm() {
       <form
         onSubmit={recreatingLogoForm.handleSubmit((data) => handleSubmit(data))}
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
           {/* Left Side - Form */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Recreating Logo</h3>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="photo" className="mb-3 block">
-                  Logo Image
-                </Label>
-                {/*------------------------------ */}
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      recreatingLogoForm.setValue("photo", file, {
-                        shouldValidate: true,
-                      });
-                    }
-                  }}
-                  className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
-                  disabled={isLoading}
+                <Controller
+                  name="photo"
+                  control={recreatingLogoForm.control}
+                  rules={{ required: "Logo image is required" }}
+                  render={({ field }) => (
+                    <div
+                      className="relative flex min-h-[270px] cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-nano-gray-500 bg-nano-olive-700  hover:bg-nano-bg p-4"
+                      onClick={() => imageInputRef.current?.click()}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        const file = e.dataTransfer.files?.[0] || null;
+                        if (file) {
+                          const imageUrl = URL.createObjectURL(file);
+                          field.onChange(file);
+                          setImagePreview(imageUrl);
+                        }
+                      }}
+                    >
+                      <Input
+                        ref={imageInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null;
+                          if (file) {
+                            const imageUrl = URL.createObjectURL(file);
+                            field.onChange(file);
+                            setImagePreview(imageUrl);
+                          }
+                        }}
+                        className="hidden"
+                        disabled={isLoading}
+                      />
+                      {/* --------------------From Added Photo preview ----------------- */}
+                      {imagePreview && field.value ? (
+                        <>
+                          <Image
+                            src={imagePreview}
+                            alt="Selected product"
+                            fill
+                            style={{ objectFit: "contain" }}
+                            className="rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              field.onChange(null);
+                              setImagePreview(null);
+                              if (imageInputRef.current) {
+                                imageInputRef.current.value = "";
+                              }
+                            }}
+                            className="absolute top-2 right-2 z-10 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                            disabled={isLoading}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <div className="text-center">
+                          <Plus className="mx-auto p-3 rounded-full h-12 w-12 text-nano-gray-400 bg-emerald-500 hover:bg-emerald-600 text-black hover:text-white" />
+                          <p className="mt-2 text-sm text-nano-gray-100 ">
+                            Drag & drop an image here, or click to select one
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 />
-
                 {recreatingLogoForm.formState.errors.photo && (
-                  <p className="text-red-500 text-xs mt-1">
-                    Logo image is required
+                  <p className="mt-1 text-xs text-red-500">
+                    {
+                      recreatingLogoForm.formState.errors.photo
+                        .message as string
+                    }
                   </p>
                 )}
               </div>
@@ -118,7 +179,7 @@ export default function RecreatingLogoForm() {
                 </Label>
                 <Textarea
                   {...recreatingLogoForm.register("keyMessages", {
-                    required: true,
+                    required: "Key Messages is required",
                   })}
                   placeholder="List the main points you want to communicate in your ad..."
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 min-h-[100px]"
@@ -126,7 +187,10 @@ export default function RecreatingLogoForm() {
                 />
                 {recreatingLogoForm.formState.errors.keyMessages && (
                   <p className="text-red-500 text-xs mt-1">
-                    Key Messages is required
+                    {
+                      recreatingLogoForm.formState.errors.keyMessages
+                        .message as string
+                    }
                   </p>
                 )}
               </div>
@@ -138,7 +202,11 @@ export default function RecreatingLogoForm() {
                   control={recreatingLogoForm.control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isLoading}
+                    >
                       <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
                         <SelectValue />
                       </SelectTrigger>
@@ -158,7 +226,6 @@ export default function RecreatingLogoForm() {
 
               {/* ---------------Buttons Section-------------- */}
               {!output ? (
-                // Show single Generate button before first generation (including while loading)
                 <Button
                   type="submit"
                   disabled={isLoading}
