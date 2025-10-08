@@ -14,10 +14,13 @@ import { useState } from "react";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
+import { GenerationResponse } from "@/types/generation";
+import { Download } from "lucide-react";
 
 export default function ProductPhotographyForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [output, setOutput] = useState<string | null>(null);
+  const [output, setOutput] = useState<GenerationResponse | null>(null);
+  const [postError, setPostError] = useState<null | string>(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const productPhotographyForm = useForm({
@@ -48,19 +51,25 @@ export default function ProductPhotographyForm() {
       });
 
       const result = await response.json();
-      if (result.operationStatus === "successful") {
-        setOutput(result.imageOutput);
-        toast.success("Image generated successfully!");
+      if (result?.operationStatus === "successful") {
+        setOutput(result);
+        toast.success("Product Photo generated successfully!");
       } else {
-        setOutput("Error generating content. Please try again.");
+        setPostError("Error generating content. Please try again.");
         toast.error("Error generating content. Please try again.");
       }
     } catch {
-      setOutput("Error generating content. Please try again.");
+      setPostError("Error generating content. Please try again.");
       toast.error("Error generating content. Please try again.");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleReset = () => {
+    productPhotographyForm.reset();
+    setOutput(null);
+    setPostError(null);
   };
 
   return (
@@ -86,7 +95,13 @@ export default function ProductPhotographyForm() {
                     required: true,
                   })}
                   className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
+                  disabled={isLoading}
                 />
+                {productPhotographyForm.formState.errors.photo && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Product photo is required
+                  </p>
+                )}
               </div>
 
               <div>
@@ -96,7 +111,11 @@ export default function ProductPhotographyForm() {
                   control={productPhotographyForm.control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isLoading}
+                    >
                       <SelectTrigger className="w-full border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100">
                         <SelectValue />
                       </SelectTrigger>
@@ -109,13 +128,35 @@ export default function ProductPhotographyForm() {
                 />
               </div>
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90"
-              >
-                {isLoading ? "Generating..." : "Generate Product Photography"}
-              </Button>
+              {/* ---------------Buttons Section-------------- */}
+              {!output ? (
+                // Show single Generate button before first generation (including while loading)
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-emerald-500 text-black hover:bg-emerald-500/90 cursor-pointer"
+                >
+                  {isLoading ? "Generating..." : "Generate Product Photo"}
+                </Button>
+              ) : (
+                // After first generation, show Generate + Reset buttons
+                <div className="flex items-center justify-between w-full gap-2">
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-[79%] bg-emerald-500 text-black hover:bg-emerald-500/90 cursor-pointer"
+                  >
+                    {isLoading ? "Generating..." : "Generate Product Photo"}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleReset}
+                    className="w-[18%] bg-red-500 text-black hover:bg-red-500/90 hover:text-white cursor-pointer"
+                  >
+                    Reset
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -130,16 +171,29 @@ export default function ProductPhotographyForm() {
                 </div>
               ) : output ? (
                 <div className="w-full">
-                  {typeof output === "string" && output.startsWith("http") ? (
-                    <Image
-                      src={output}
-                      alt="Generated content"
-                      width={500}
-                      height={500}
-                      className="w-full h-auto rounded"
-                    />
+                  {postError?.includes("Error") ? (
+                    <p className="text-red-500 text-center">{postError}</p>
                   ) : (
-                    <pre className="whitespace-pre-wrap text-sm">{output}</pre>
+                    <div className="relative w-full ">
+                      <a
+                        href={output?.imageDownloadLink}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute top-2 right-2 z-10 bg-emerald-500 hover:bg-emerald-600 text-black hover:text-white p-2 rounded-full "
+                        title="Download Image"
+                      >
+                        <Download className="w-5 h-5" />
+                      </a>
+
+                      <Image
+                        src={`https://drive.google.com/uc?id=${output?.fileId}`}
+                        alt="Generated content"
+                        width={400}
+                        height={400}
+                        className="w-full h-auto rounded"
+                      />
+                    </div>
                   )}
                 </div>
               ) : (

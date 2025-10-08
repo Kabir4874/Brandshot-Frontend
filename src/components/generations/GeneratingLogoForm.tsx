@@ -24,7 +24,7 @@ export default function GeneratingLogoForm() {
   const [postError, setPostError] = useState<null | string>(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  /*   const generatingLogoForm = useForm({
+  const generatingLogoForm = useForm({
     defaultValues: {
       brandName: "Cash Sol",
       yourIndustry: "",
@@ -38,9 +38,9 @@ export default function GeneratingLogoForm() {
         "Use primary blue (#1E90FF), secondary dark gray (#222222), modern sans-serif fonts, and a professional, ambitious tone.",
       upscaleImage: "no",
     },
-  }); */
+  });
 
-  const generatingLogoForm = useForm({
+  /*   const generatingLogoForm = useForm({
     defaultValues: {
       brandName: "",
       yourIndustry: "",
@@ -52,7 +52,7 @@ export default function GeneratingLogoForm() {
       brandGuidelines: "",
       upscaleImage: "no",
     },
-  });
+  }); */
 
   const handleSubmit = async (formData: any) => {
     setIsLoading(true);
@@ -68,7 +68,7 @@ export default function GeneratingLogoForm() {
       const result = await response.json();
       if (result?.operationStatus === "successful") {
         setOutput(result);
-        toast.success("Image generated successfully!");
+        toast.success("Logo generated successfully!");
       } else {
         setPostError("Error generating content. Please try again.");
         toast.error("Error generating content. Please try again.");
@@ -316,8 +316,9 @@ export default function GeneratingLogoForm() {
                 )}
               />
             </div>
-            {/* ---------------Button Before Generation-------------- */}
-            {!output && !isLoading && (
+            {/* ---------------Buttons Section-------------- */}
+            {!output ? (
+              // Show single Generate button before first generation (including while loading)
               <Button
                 type="submit"
                 disabled={isLoading}
@@ -325,10 +326,8 @@ export default function GeneratingLogoForm() {
               >
                 {isLoading ? "Generating..." : "Generate Logo"}
               </Button>
-            )}
-
-            {/* ---------------Button After Generation-------------- */}
-            {output && !isLoading && (
+            ) : (
+              // After first generation, show Generate + Reset buttons
               <div className="flex items-center justify-between w-full gap-2">
                 <Button
                   type="submit"
