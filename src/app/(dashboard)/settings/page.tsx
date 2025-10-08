@@ -5,6 +5,7 @@ import {
   getUserDoc,
   listPresets,
   setOpenRouterKey,
+  setUserTheme,
   upsertUserProfile,
 } from "@/api/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,6 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/providers/AuthProvider";
+import { useTheme } from "@/providers/ThemeProvider";
 import { AppUserDoc, PromptPreset } from "@/types/user";
 import { signOut } from "firebase/auth";
 import { useEffect, useMemo, useState } from "react";
@@ -86,6 +88,7 @@ const OPTIONS: Record<Category, { platforms: Opt[]; contentTypes: Opt[] }> = {
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   const [profile, setProfile] = useState<AppUserDoc | null>(null);
   const [loading, setLoading] = useState(true);
@@ -100,7 +103,7 @@ export default function SettingsPage() {
   const [prompt, setPrompt] = useState("");
 
   // OpenRouter Key form
-  const [keyField, setKeyField] = useState(""); // input box
+  const [keyField, setKeyField] = useState("");
   const [savingKey, setSavingKey] = useState(false);
 
   useEffect(() => {
@@ -110,7 +113,7 @@ export default function SettingsPage() {
 
   const currentOptions = OPTIONS[activeTab];
 
-  // Load profile + presets + prefill key mask
+  // Load profile + presets + prefill key + theme (if user has one saved)
   useEffect(() => {
     let dead = false;
 
@@ -125,7 +128,7 @@ export default function SettingsPage() {
       setLoading(true);
       setErr(null);
       try {
-        // Upsert minimal profile (safe nulls)
+        // upsert basic profile (safe nulls)
         await upsertUserProfile(user.uid, {
           uid: user.uid,
           email: user.email ?? "",
@@ -137,12 +140,14 @@ export default function SettingsPage() {
         if (!dead) {
           setProfile(doc);
 
-          // Prefill field with masked key, but only for display
-          if (doc?.openrouterKey) {
-            setKeyField(maskKey(doc.openrouterKey));
-          } else {
-            setKeyField("");
+          // theme: if user has a saved theme, apply it
+          if (doc?.theme === "light" || doc?.theme === "dark") {
+            setTheme(doc.theme);
           }
+
+          // Prefill masked api key field
+          if (doc?.openrouterKey) setKeyField(maskKey(doc.openrouterKey));
+          else setKeyField("");
         }
 
         const list = await listPresets(user.uid, activeTab);
@@ -153,12 +158,12 @@ export default function SettingsPage() {
         if (!dead) setLoading(false);
       }
     }
-    run();
 
+    run();
     return () => {
       dead = true;
     };
-  }, [user, activeTab]);
+  }, [user, activeTab, setTheme]);
 
   // Avatar initials
   const initials = useMemo(() => {
@@ -200,11 +205,8 @@ export default function SettingsPage() {
 
   /* --------- OpenRouter Key --------- */
   function isMasked(v: string) {
-    return (
-      /^•+\*[A-Za-z0-9_-]{4}$/.test(v) || /^•+$/.test(v) || v.startsWith("••••")
-    );
+    return /^•+/.test(v);
   }
-
   function maskKey(k: string) {
     if (!k) return "";
     const last4 = k.slice(-4);
@@ -216,22 +218,18 @@ export default function SettingsPage() {
     setSavingKey(true);
     setErr(null);
     try {
-      // If input looks masked, keep existing key (no change)
       const current = profile?.openrouterKey ?? null;
       let toSave: string | null;
 
       if (!keyField.trim()) {
-        toSave = null; // clear key
+        toSave = null; // clear
       } else if (isMasked(keyField.trim()) && current) {
-        toSave = current; // keep
+        toSave = current; // unchanged
       } else {
-        // Optional: Validate format (OpenRouter keys often look like sk-or-v1-...)
-        // We'll just ensure non-empty for now.
         toSave = keyField.trim();
       }
 
       await setOpenRouterKey(user.uid, toSave);
-      // Refresh profile
       const doc = await getUserDoc(user.uid);
       setProfile(doc);
       setKeyField(doc?.openrouterKey ? maskKey(doc.openrouterKey) : "");
@@ -258,12 +256,22 @@ export default function SettingsPage() {
     }
   }
 
+  async function toggleTheme(checked: boolean) {
+    const next = checked ? "dark" : "light";
+    setTheme(next);
+    if (user) {
+      try {
+        await setUserTheme(user.uid, next);
+      } catch {}
+    }
+  }
+
   async function handleLogout() {
     await signOut(auth);
   }
 
   return (
-    <main className="w-full bg-nano-deep-950 text-nano-white">
+    <main className="w-full bg-white text-nano-deep-900 dark:bg-nano-deep-950 dark:text-nano-white">
       <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-16">
         {/* Title */}
         <h1 className="mb-6 text-3xl font-extrabold leading-none tracking-tight">
@@ -271,7 +279,7 @@ export default function SettingsPage() {
         </h1>
 
         {err && (
-          <div className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-[13px] text-red-200">
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
             {err}
           </div>
         )}
@@ -280,26 +288,26 @@ export default function SettingsPage() {
         <Section title="Account">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 ring-1 ring-nano-deep-900">
+              <Avatar className="h-10 w-10 ring-1 ring-nano-gray-100 dark:ring-nano-deep-900">
                 <AvatarImage
                   src={profile?.photoURL || undefined}
                   alt="Profile"
                 />
-                <AvatarFallback className="bg-nano-olive-700 text-nano-mint">
+                <AvatarFallback className="bg-nano-gray-100 text-nano-deep-900 dark:bg-nano-olive-700 dark:text-nano-mint">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="leading-tight">
-                <div className="text-[14px] font-semibold text-white">
+                <div className="text-[14px] font-semibold text-nano-deep-900 dark:text-white">
                   {profile?.displayName || profile?.email || "User"}
                 </div>
-                <div className="text-[13px] text-nano-gray-100/85">
+                <div className="text-[13px] text-nano-olive-700/80 dark:text-nano-gray-100/85">
                   {profile?.email || "—"}
                 </div>
               </div>
             </div>
             <Button
-              className="h-8 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95"
+              className="h-8 rounded-md bg-nano-deep-900 px-3 text-[13px] font-medium text-white hover:bg-nano-deep-900/95 dark:bg-nano-forest-800 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/95"
               onClick={() => alert("Profile management coming soon.")}
               disabled={loading}
             >
@@ -314,12 +322,12 @@ export default function SettingsPage() {
             label="Current Plan"
             value={profile?.plan ? profile.plan.toUpperCase() : "FREE"}
           >
-            <Button className="h-8 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95">
+            <Button className="h-8 rounded-md bg-nano-deep-900 px-3 text-[13px] font-medium text-white hover:bg-nano-deep-900/95 dark:bg-nano-forest-800 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/95">
               Upgrade
             </Button>
           </Row>
           <Row label="Billing Information" value="—">
-            <Button className="h-8 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95">
+            <Button className="h-8 rounded-md bg-nano-deep-900 px-3 text-[13px] font-medium text-white hover:bg-nano-deep-900/95 dark:bg-nano-forest-800 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/95">
               Update
             </Button>
           </Row>
@@ -327,24 +335,24 @@ export default function SettingsPage() {
 
         {/* API Keys */}
         <Section title="API Keys">
-          <div className="flex flex-col gap-3 rounded-lg border border-nano-forest-800 bg-nano-olive-700/20 p-3">
+          <div className="flex flex-col gap-3 rounded-lg border border-nano-gray-100 bg-white p-3 dark:border-nano-forest-800 dark:bg-nano-olive-700/20">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-[13px] font-semibold text-nano-gray-100">
+                <div className="text-[13px] font-semibold text-nano-deep-900 dark:text-nano-gray-100">
                   OpenRouter API
                 </div>
-                <div className="text-[12px] text-nano-gray-100/75">
+                <div className="text-[12px] text-nano-olive-700/80 dark:text-nano-gray-100/75">
                   Store your OpenRouter API key to enable model calls.
                 </div>
               </div>
-              <div className="text-[12px] text-nano-gray-100/75">
+              <div className="text-[12px] text-nano-olive-700/80 dark:text-nano-gray-100/75">
                 {profile?.openrouterKey ? "Saved" : "Not set"}
               </div>
             </div>
 
             <div className="grid gap-2 sm:flex sm:items-end sm:gap-3">
               <div className="flex-1 min-w-[260px]">
-                <Label className="mb-1 block text-[12px] text-nano-gray-100">
+                <Label className="mb-1 block text-[12px] text-nano-deep-900 dark:text-nano-gray-100">
                   API Key
                 </Label>
                 <Input
@@ -352,7 +360,7 @@ export default function SettingsPage() {
                   placeholder="sk-or-v1-..."
                   value={keyField}
                   onChange={(e) => setKeyField(e.target.value)}
-                  className="h-10 w-full rounded-md border border-nano-forest-800 bg-nano-olive-700 text-[13px] text-nano-gray-100 placeholder:text-nano-gray-100/60 focus-visible:ring-0"
+                  className="h-10 w-full rounded-md border border-nano-gray-100 bg-white text-[13px] text-nano-deep-900 placeholder:text-nano-deep-900/60 focus-visible:ring-0 dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-gray-100 dark:placeholder:text-nano-gray-100/60"
                 />
               </div>
 
@@ -366,7 +374,7 @@ export default function SettingsPage() {
                 </Button>
                 <Button
                   variant="ghost"
-                  className="h-9 rounded-md bg-transparent px-3 text-[13px] text-nano-mint hover:bg-nano-deep-900 disabled:opacity-70"
+                  className="h-9 rounded-md bg-transparent px-3 text-[13px] text-nano-deep-900 hover:bg-nano-gray-100/60 disabled:opacity-70 dark:text-nano-mint dark:hover:bg-nano-deep-900"
                   onClick={removeKey}
                   disabled={savingKey || !profile?.openrouterKey || !user}
                 >
@@ -384,22 +392,22 @@ export default function SettingsPage() {
             onValueChange={(v) => setActiveTab(v as Category)}
             className="w-full"
           >
-            <TabsList className="relative h-auto w-auto justify-start gap-8 border-b border-nano-deep-900 bg-transparent p-0">
+            <TabsList className="relative h-auto w-auto justify-start gap-8 border-b border-nano-deep-900/80 bg-transparent p-0 dark:border-nano-gray-100/15">
               <TabsTrigger
                 value="social"
-                className="px-0 py-2 text-[13px] font-semibold"
+                className="px-0 py-2 text-[13px] font-semibold text-nano-deep-900/70 hover:text-nano-deep-900 data-[state=active]:border-b-2 data-[state=active]:border-nano-forest-800 data-[state=active]:text-nano-forest-800 dark:text-nano-gray-100/80 dark:hover:text-nano-gray-100 dark:data-[state=active]:border-nano-mint dark:data-[state=active]:text-white"
               >
                 Social Media
               </TabsTrigger>
               <TabsTrigger
                 value="marketing"
-                className="px-0 py-2 text-[13px] font-semibold"
+                className="px-0 py-2 text-[13px] font-semibold text-nano-deep-900/70 hover:text-nano-deep-900 data-[state=active]:border-b-2 data-[state=active]:border-nano-forest-800 data-[state=active]:text-nano-forest-800 dark:text-nano-gray-100/80 dark:hover:text-nano-gray-100 dark:data-[state=active]:border-nano-mint dark:data-[state=active]:text-white"
               >
                 Marketing
               </TabsTrigger>
               <TabsTrigger
                 value="ecom"
-                className="px-0 py-2 text-[13px] font-semibold"
+                className="px-0 py-2 text-[13px] font-semibold text-nano-deep-900/70 hover:text-nano-deep-900 data-[state=active]:border-b-2 data-[state=active]:border-nano-forest-800 data-[state=active]:text-nano-forest-800 dark:text-nano-gray-100/80 dark:hover:text-nano-gray-100 dark:data-[state=active]:border-nano-mint dark:data-[state=active]:text-white"
               >
                 E-commerce
               </TabsTrigger>
@@ -455,29 +463,30 @@ export default function SettingsPage() {
           </Tabs>
         </Section>
 
-        {/* General (demo toggles) */}
+        {/* General */}
         <Section title="General">
           <Row label="Language" value="English">
-            <Button className="h-8 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95">
+            <Button className="h-8 rounded-md bg-nano-deep-900 px-3 text-[13px] font-medium text-white hover:bg-nano-deep-900/95 dark:bg-nano-forest-800 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/95">
               Change
             </Button>
           </Row>
 
-          <Row label="Theme" value="Dark">
+          <Row label="Theme" value={theme === "dark" ? "Dark" : "Light"}>
             <Switch
-              defaultChecked
+              checked={theme === "dark"}
+              onCheckedChange={toggleTheme}
               className="data-[state=checked]:bg-emerald-500"
             />
           </Row>
 
           <Row label="Notifications" value="Enabled">
-            <Button className="h-8 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95">
+            <Button className="h-8 rounded-md bg-nano-deep-900 px-3 text-[13px] font-medium text-white hover:bg-nano-deep-900/95 dark:bg-nano-forest-800 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/95">
               Change
             </Button>
           </Row>
 
           <Row label="Privacy" value="Enabled">
-            <Button className="h-8 rounded-md bg-nano-forest-800 px-3 text-[13px] font-medium text-nano-gray-100 hover:bg-nano-forest-800/95">
+            <Button className="h-8 rounded-md bg-nano-deep-900 px-3 text-[13px] font-medium text-white hover:bg-nano-deep-900/95 dark:bg-nano-forest-800 dark:text-nano-gray-100 dark:hover:bg-nano-forest-800/95">
               Change
             </Button>
           </Row>
@@ -486,7 +495,7 @@ export default function SettingsPage() {
         {/* Logout */}
         <div className="mt-8">
           <Button
-            className="h-8 rounded-md bg-nano-olive-700 px-4 text-[13px] font-medium text-nano-mint hover:bg-nano-deep-900"
+            className="h-8 rounded-md bg-nano-deep-900 px-4 text-[13px] font-medium text-white hover:bg-nano-deep-900/95 dark:bg-nano-olive-700 dark:text-nano-mint dark:hover:bg-nano-deep-900"
             onClick={handleLogout}
             disabled={!user}
           >
@@ -509,7 +518,7 @@ function Section({
 }) {
   return (
     <section className="mb-8">
-      <h2 className="mb-3 text-[15px] font-semibold text-nano-gray-100">
+      <h2 className="mb-3 text-[15px] font-semibold text-nano-deep-900 dark:text-nano-gray-100">
         {title}
       </h2>
       <div className="space-y-4">{children}</div>
@@ -529,10 +538,12 @@ function Row({
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <div className="text-[13px] font-semibold text-nano-gray-100">
+        <div className="text-[13px] font-semibold text-nano-deep-900 dark:text-nano-gray-100">
           {label}
         </div>
-        <div className="text-[13px] text-nano-gray-100/80">{value}</div>
+        <div className="text-[13px] text-nano-olive-700/80 dark:text-nano-gray-100/80">
+          {value}
+        </div>
       </div>
       {children}
     </div>
@@ -566,14 +577,14 @@ function PresetForm({
     <>
       {/* Platform */}
       <div className="mb-4">
-        <Label className="mb-2 block text-[13px] text-nano-gray-100">
+        <Label className="mb-2 block text-[13px] text-nano-deep-900 dark:text-nano-gray-100">
           Platform
         </Label>
         <Select value={platform} onValueChange={setPlatform}>
-          <SelectTrigger className="h-11 w-full lg:w-[420px] justify-between rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 hover:bg-nano-olive-700 focus:ring-0 focus:ring-offset-0">
+          <SelectTrigger className="h-11 w-full justify-between rounded-lg border border-nano-gray-100 bg-white text-[14px] text-nano-deep-900 hover:bg-nano-gray-100/60 focus:ring-0 focus:ring-offset-0 lg:w-[420px] dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-gray-100 dark:hover:bg-nano-olive-700">
             <SelectValue placeholder="Select a platform" />
           </SelectTrigger>
-          <SelectContent className="border-0 bg-nano-olive-700 text-nano-gray-100">
+          <SelectContent className="border border-nano-gray-100 bg-white text-nano-deep-900 dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-gray-100">
             {platformOptions.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
                 {opt.label}
@@ -585,14 +596,14 @@ function PresetForm({
 
       {/* Content Type */}
       <div className="mb-4">
-        <Label className="mb-2 block text-[13px] text-nano-gray-100">
+        <Label className="mb-2 block text-[13px] text-nano-deep-900 dark:text-nano-gray-100">
           Content Type
         </Label>
         <Select value={ctype} onValueChange={setCtype}>
-          <SelectTrigger className="h-11 w-full lg:w-[420px] justify-between rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 hover:bg-nano-olive-700 focus:ring-0 focus:ring-offset-0">
+          <SelectTrigger className="h-11 w-full justify-between rounded-lg border border-nano-gray-100 bg-white text-[14px] text-nano-deep-900 hover:bg-nano-gray-100/60 focus:ring-0 focus:ring-offset-0 lg:w-[420px] dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-gray-100 dark:hover:bg-nano-olive-700">
             <SelectValue placeholder="Select content type" />
           </SelectTrigger>
-          <SelectContent className="border-0 bg-nano-olive-700 text-nano-gray-100">
+          <SelectContent className="border border-nano-gray-100 bg-white text-nano-deep-900 dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-gray-100">
             {typeOptions.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
                 {opt.label}
@@ -604,14 +615,14 @@ function PresetForm({
 
       {/* Prompt */}
       <div className="mb-3">
-        <Label className="mb-2 block text-[13px] text-nano-gray-100">
+        <Label className="mb-2 block text-[13px] text-nano-deep-900 dark:text-nano-gray-100">
           Prompt
         </Label>
         <Textarea
           placeholder="Enter your prompt..."
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          className="h-36 w-full lg:w-[620px] resize-none rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-nano-gray-100/60 focus-visible:ring-0"
+          className="h-36 w-full resize-none rounded-lg border border-nano-gray-100 bg-white text-[14px] text-nano-deep-900 placeholder:text-nano-deep-900/60 focus-visible:ring-0 lg:w-[620px] dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-gray-100 dark:placeholder:text-nano-gray-100/60"
         />
       </div>
 
@@ -632,7 +643,7 @@ function PresetForm({
 function PresetList({ presets }: { presets: PromptPreset[] }) {
   if (!presets.length) {
     return (
-      <div className="mt-6 text-[13px] text-nano-gray-100/80">
+      <div className="mt-6 text-[13px] text-nano-olive-700/80 dark:text-nano-gray-100/80">
         No presets yet for this tab.
       </div>
     );
@@ -642,13 +653,13 @@ function PresetList({ presets }: { presets: PromptPreset[] }) {
       {presets.map((p) => (
         <div
           key={p.id}
-          className="rounded-lg border border-nano-forest-800 bg-nano-olive-700/20 p-3"
+          className="rounded-lg border border-nano-gray-100 bg-white p-3 dark:border-nano-forest-800 dark:bg-nano-olive-700/20"
         >
-          <div className="mb-1 text-[12px] text-nano-gray-100/70">
+          <div className="mb-1 text-[12px] text-nano-olive-700/80 dark:text-nano-gray-100/70">
             {p.platform} • {p.contentType} •{" "}
             {new Date(p.updatedAt).toLocaleString()}
           </div>
-          <div className="text-[13px] text-nano-gray-100/90 whitespace-pre-wrap">
+          <div className="whitespace-pre-wrap text-[13px] text-nano-deep-900/90 dark:text-nano-gray-100/90">
             {p.prompt}
           </div>
         </div>
