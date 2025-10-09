@@ -282,6 +282,11 @@ export default function AdCreativeForm() {
                     </Select>
                   )}
                 />
+                {adCreativeForm.formState.errors.upscaleImage && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Please select Image Upscale needed or not
+                  </p>
+                )}
               </div>
               {/* ---------------Buttons Section-------------- */}
               {!output ? (
@@ -324,32 +329,27 @@ export default function AdCreativeForm() {
                   <div className="w-8 h-8 border-4 border-nano-forest-800 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
                   <p className="text-nano-gray-100">Generating content...</p>
                 </div>
+              ) : postError ? (
+                <p className="text-red-500 text-center">{postError}</p>
               ) : output ? (
-                <div className="w-full">
-                  {postError?.includes("Error") ? (
-                    <p className="text-red-500 text-center">{postError}</p>
-                  ) : (
-                    <div className="relative w-full ">
-                      <a
-                        href={output?.imageDownloadLink}
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="absolute top-2 right-2 z-10 bg-emerald-500 hover:bg-emerald-600 text-black hover:text-white p-2 rounded-full "
-                        title="Download Image"
-                      >
-                        <Download className="w-5 h-5" />
-                      </a>
-
-                      <Image
-                        src={`https://drive.google.com/uc?id=${output?.fileId}`}
-                        alt="Generated content"
-                        width={400}
-                        height={400}
-                        className="w-full h-auto rounded"
-                      />
-                    </div>
-                  )}
+                <div className="relative w-full">
+                  <a
+                    href={output?.imageDownloadLink}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute top-2 right-2 z-10 bg-emerald-500 hover:bg-emerald-600 text-black hover:text-white p-2 rounded-full"
+                    title="Download Image"
+                  >
+                    <Download className="w-5 h-5" />
+                  </a>
+                  <Image
+                    src={`https://drive.google.com/uc?id=${output?.fileId}`}
+                    alt="Generated content"
+                    width={400}
+                    height={400}
+                    className="w-full h-auto rounded"
+                  />
                 </div>
               ) : (
                 <p className="text-nano-gray-100 text-center">
