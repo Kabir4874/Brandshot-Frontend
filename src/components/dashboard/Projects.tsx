@@ -140,36 +140,36 @@ export default function ProjectsTable() {
   }
 
   return (
-    <section className="w-full bg-nano-deep-950 text-nano-white">
+    <section className="w-full bg-white text-nano-deep-900 dark:bg-nano-deep-950 dark:text-nano-white">
       <div className="mx-auto max-w-[1100px] px-4 md:px-6 pt-6 pb-10">
         <h2 className="mb-4 text-xl font-semibold tracking-tight">Projects</h2>
 
         {error && (
-          <div className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-[13px] text-red-200">
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
             {error}
           </div>
         )}
 
-        <div className="overflow-hidden rounded-lg ring-1 ring-nano-deep-900/80">
+        <div className="overflow-hidden rounded-lg ring-1 ring-nano-gray-100 dark:ring-nano-deep-900/80">
           <Table className="[&_th]:text-left">
             <TableHeader className="bg-transparent">
-              <TableRow className="border-0 border-b border-nano-deep-900/80">
-                <TableHead className="h-12 px-6 text-[13px] font-semibold text-nano-gray-100">
+              <TableRow className="border-0 border-b border-nano-gray-100 dark:border-nano-deep-900/80">
+                <TableHead className="h-12 px-6 text-[13px] font-semibold text-nano-deep-900 dark:text-nano-gray-100">
                   Project
                 </TableHead>
-                <TableHead className="px-6 text-[13px] font-semibold text-nano-gray-100">
+                <TableHead className="px-6 text-[13px] font-semibold text-nano-deep-900 dark:text-nano-gray-100">
                   Client/Site
                 </TableHead>
-                <TableHead className="px-6 text-[13px] font-semibold text-nano-gray-100">
+                <TableHead className="px-6 text-[13px] font-semibold text-nano-deep-900 dark:text-nano-gray-100">
                   Service Tags
                 </TableHead>
-                <TableHead className="px-6 text-[13px] font-semibold text-nano-gray-100">
+                <TableHead className="px-6 text-[13px] font-semibold text-nano-deep-900 dark:text-nano-gray-100">
                   Created
                 </TableHead>
-                <TableHead className="px-6 text-[13px] font-semibold text-nano-gray-100">
+                <TableHead className="px-6 text-[13px] font-semibold text-nano-deep-900 dark:text-nano-gray-100">
                   Generations
                 </TableHead>
-                <TableHead className="px-6 text-[13px] font-semibold text-nano-gray-100">
+                <TableHead className="px-6 text-[13px] font-semibold text-nano-deep-900 dark:text-nano-gray-100">
                   Actions
                 </TableHead>
               </TableRow>
@@ -180,7 +180,7 @@ export default function ProjectsTable() {
                 <TableRow className="border-0">
                   <TableCell
                     colSpan={6}
-                    className="px-6 py-8 text-[13px] text-nano-gray-100/85"
+                    className="px-6 py-8 text-[13px] text-nano-deep-900/70 dark:text-nano-gray-100/85"
                   >
                     Loading…
                   </TableCell>
@@ -189,7 +189,7 @@ export default function ProjectsTable() {
                 <TableRow className="border-0">
                   <TableCell
                     colSpan={6}
-                    className="px-6 py-8 text-[13px] text-nano-gray-100/85"
+                    className="px-6 py-8 text-[13px] text-nano-deep-900/70 dark:text-nano-gray-100/85"
                   >
                     No matching projects.
                   </TableCell>
@@ -212,19 +212,21 @@ export default function ProjectsTable() {
 
       {/* Rename dialog */}
       <Dialog open={renOpen} onOpenChange={setRenOpen}>
-        <DialogContent className="border-nano-forest-800 bg-nano-olive-700/20 text-nano-white">
+        <DialogContent className="border border-nano-gray-100 bg-white text-nano-deep-900 dark:border-nano-forest-800 dark:bg-nano-olive-700/20 dark:text-nano-white">
           <DialogHeader>
-            <DialogTitle className="text-white">Rename Project</DialogTitle>
+            <DialogTitle className="text-nano-deep-900 dark:text-white">
+              Rename Project
+            </DialogTitle>
           </DialogHeader>
           <Input
             value={renName}
             onChange={(e) => setRenName(e.target.value)}
-            className="h-11 rounded-lg border border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100 placeholder:text-nano-gray-100/60 focus-visible:ring-0"
+            className="h-11 rounded-lg border border-nano-gray-100 bg-white text-[14px] text-nano-deep-900 placeholder:text-nano-deep-900/60 focus-visible:ring-0 focus-visible:border-nano-deep-900/20 dark:border-nano-forest-800 dark:bg-nano-olive-700 dark:text-nano-gray-100 dark:placeholder:text-nano-gray-100/60"
           />
           <DialogFooter>
             <Button
               variant="ghost"
-              className="h-9 rounded-md bg-transparent px-3 text-[13px] text-nano-mint hover:bg-nano-deep-900"
+              className="h-9 rounded-md bg-transparent px-3 text-[13px] text-nano-deep-900 hover:bg-nano-gray-100 dark:text-nano-mint dark:hover:bg-nano-deep-900"
               onClick={() => setRenOpen(false)}
               disabled={saving}
             >
@@ -257,37 +259,40 @@ function ProjectsRow({
 }) {
   return (
     <TableRow
-      className={cn("border-0", !isLast && "border-b border-nano-deep-900/80")}
+      className={cn(
+        "border-0",
+        !isLast && "border-b border-nano-gray-100 dark:border-nano-deep-900/80"
+      )}
     >
       <TableCell
-        className="h-[76px] px-6 align-middle text-[14px] text-white"
+        className="h-[76px] px-6 align-middle text-[14px] text-nano-deep-900 dark:text-white"
         onDoubleClick={onRename}
         title="Double-click to rename"
       >
         {row.name}
       </TableCell>
 
-      <TableCell className="px-6 align-middle text-[14px] text-nano-mint/85">
+      <TableCell className="px-6 align-middle text-[14px] text-nano-deep-900/80 dark:text-nano-mint/85">
         {row.client || "—"}
       </TableCell>
 
       <TableCell className="px-6 align-middle">
         {row.tags?.length ? (
-          <span className="inline-flex items-center rounded-full bg-nano-forest-800 px-3 py-1 text-[13px] font-semibold text-nano-gray-100">
+          <span className="inline-flex items-center rounded-full bg-nano-gray-100 px-3 py-1 text-[13px] font-semibold text-nano-deep-900 dark:bg-nano-forest-800 dark:text-nano-gray-100">
             {row.tags.join(", ")}
           </span>
         ) : (
-          <span className="inline-flex items-center rounded-full bg-nano-forest-800 px-3 py-1 text-[13px] font-semibold text-nano-gray-100">
+          <span className="inline-flex items-center rounded-full bg-nano-gray-100 px-3 py-1 text-[13px] font-semibold text-nano-deep-900 dark:bg-nano-forest-800 dark:text-nano-gray-100">
             General
           </span>
         )}
       </TableCell>
 
-      <TableCell className="px-6 align-middle text-[14px] text-nano-gray-100/90">
+      <TableCell className="px-6 align-middle text-[14px] text-nano-deep-900/70 dark:text-nano-gray-100/90">
         {row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "—"}
       </TableCell>
 
-      <TableCell className="px-6 align-middle text-[14px] text-nano-gray-100/90">
+      <TableCell className="px-6 align-middle text-[14px] text-nano-deep-900/70 dark:text-nano-gray-100/90">
         {row.totalGenerations ?? 0}
       </TableCell>
 
@@ -295,15 +300,15 @@ function ProjectsRow({
         <div className="text-right md:text-left">
           <Link
             href={`/project/${row.id}`}
-            className="block text-[13px] font-semibold text-nano-gray-100 hover:underline"
+            className="block text-[13px] font-semibold text-nano-deep-900 hover:underline dark:text-nano-gray-100"
           >
             View Project
           </Link>
-          <span className="block text-[13px] font-semibold text-nano-gray-100">
+          <span className="block text-[13px] font-semibold text-nano-deep-900 dark:text-nano-gray-100">
             |{" "}
             <button
               onClick={onArchive}
-              className="hover:underline cursor-pointer"
+              className="cursor-pointer hover:underline"
             >
               Archive Project
             </button>

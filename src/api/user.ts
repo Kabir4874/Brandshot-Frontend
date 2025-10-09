@@ -17,10 +17,8 @@ import {
   where,
 } from "firebase/firestore";
 
-/** USERS collection */
 const USERS = "users";
 
-/** /users/{uid}/presets subcollection */
 function presetsCol(uid: string) {
   return collection(db, USERS, uid, "presets");
 }
@@ -32,17 +30,12 @@ export async function getUserDoc(uid: string): Promise<AppUserDoc | null> {
   return { uid: snap.id, ...(snap.data() as Omit<AppUserDoc, "uid">) };
 }
 
-/**
- * Upserts (creates or updates) a user profile safely.
- * Strips undefined/NaN and uses merge to avoid overwriting other fields.
- */
 export async function upsertUserProfile(
   uid: string,
   data: Partial<AppUserDoc>
 ) {
   const now = Date.now();
 
-  // Never pass undefined to Firestore
   const safe = cleanForFirestore({
     ...data,
     updatedAt: now,
@@ -53,7 +46,7 @@ export async function upsertUserProfile(
   if (!existing.exists()) {
     const base: AppUserDoc = {
       uid,
-      email: data.email ?? "", // ensure string, not undefined
+      email: data.email ?? "",
       displayName: data.displayName ?? "",
       photoURL: data.photoURL ?? null,
       plan: data.plan ?? "free",
@@ -86,7 +79,6 @@ export async function getOpenRouterKey(uid: string): Promise<string | null> {
   return typeof key === "string" && key.trim().length > 0 ? key : null;
 }
 
-/** Get all presets for a user (optionally by category) */
 export async function listPresets(
   uid: string,
   category?: PromptPreset["category"]
@@ -106,7 +98,6 @@ export async function listPresets(
   }));
 }
 
-/** Create a new preset */
 export async function createPreset(
   uid: string,
   preset: Omit<PromptPreset, "id" | "createdAt" | "updatedAt">
@@ -120,7 +111,6 @@ export async function createPreset(
   return addDoc(presetsCol(uid), cleanForFirestore(payload));
 }
 
-/** Update an existing preset */
 export async function updatePreset(
   uid: string,
   id: string,
@@ -129,4 +119,10 @@ export async function updatePreset(
   const ref = doc(db, USERS, uid, "presets", id);
   const safe = cleanForFirestore({ ...patch, updatedAt: Date.now() });
   return updateDoc(ref, safe);
+}
+
+/** Theme preference */
+export async function setUserTheme(uid: string, theme: "light" | "dark") {
+  const ref = doc(db, USERS, uid);
+  await setDoc(ref, { theme }, { merge: true });
 }

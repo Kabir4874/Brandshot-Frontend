@@ -3,6 +3,7 @@ export type AppUserDoc = {
   email: string;
   displayName?: string;
   photoURL?: string | null;
+  theme?: "light" | "dark";
   plan?: "free" | "pro";
   openrouterKey?: string | null;
   createdAt: number; // epoch ms
