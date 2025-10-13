@@ -47,6 +47,7 @@ export default function ProductPhotographyForm() {
       }
       const response = await fetch(backendUrl as string, {
         method: "POST",
+        headers: {},
         body: dataToSend,
       });
 

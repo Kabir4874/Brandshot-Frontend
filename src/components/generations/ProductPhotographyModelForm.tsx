@@ -23,7 +23,7 @@ export default function ProductPhotographyModelForm() {
   const [postError, setPostError] = useState<null | string>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL as string;
 
   const productPhotographyModelForm = useForm({
     defaultValues: {
@@ -45,8 +45,9 @@ export default function ProductPhotographyModelForm() {
       if (formData.photo) {
         dataToSend.append("photo", formData.photo);
       }
-      const response = await fetch(backendUrl as string, {
+      const response = await fetch(`${backendUrl}/gen-mdl-photography` , {
         method: "POST",
+        headers: {},
         body: dataToSend,
       });
 

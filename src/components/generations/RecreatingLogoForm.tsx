@@ -50,6 +50,7 @@ export default function RecreatingLogoForm() {
       }
       const response = await fetch(backendUrl as string, {
         method: "POST",
+        headers: {},
         body: dataToSend,
       });
 

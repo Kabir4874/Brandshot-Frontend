@@ -21,7 +21,7 @@ export default function AdCreativeForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState<GenerationResponse | null>(null);
   const [postError, setPostError] = useState<null | string>(null);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL as string;
 
   const adCreativeForm = useForm({
     defaultValues: {
@@ -43,7 +43,7 @@ export default function AdCreativeForm() {
     setOutput(null);
 
     try {
-      const response = await fetch(backendUrl as string, {
+      const response = await fetch(`${backendUrl}/ad-creative`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
