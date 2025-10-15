@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useState, useRef } from "react";
 import Image from "next/image";
@@ -30,6 +31,7 @@ export default function ProductPhotographyForm() {
       operationType: "Product Photography",
       photo: null as File | null,
       upscaleImage: "no",
+      customDirection: "",
     },
   });
 
@@ -41,6 +43,7 @@ export default function ProductPhotographyForm() {
     try {
       const dataToSend = new FormData();
       dataToSend.append("operationType", formData.operationType);
+      dataToSend.append("customDirection", formData.customDirection);
       dataToSend.append("upscaleImage", formData.upscaleImage);
       if (formData.photo) {
         dataToSend.append("photo", formData.photo);
@@ -172,7 +175,24 @@ export default function ProductPhotographyForm() {
                   </p>
                 )}
               </div>
-
+              <div>
+                <Label className="mb-3 block">
+                  Custom Direction{" "}
+                  <span className="text-nano-gray-400">(optional)</span>
+                </Label>
+                <Controller
+                  name="customDirection"
+                  control={productPhotographyForm.control}
+                  render={({ field }) => (
+                    <Textarea
+                      {...field}
+                      placeholder="If you have  any specific instructions for the product photography generation add here"
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
+                      disabled={isLoading}
+                    />
+                  )}
+                />
+              </div>
               <div>
                 <Label className="mb-3 block">Upscale Image</Label>
                 <Controller

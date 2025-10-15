@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
@@ -30,6 +31,7 @@ export default function ProductPhotographyModelForm() {
       operationType: "Product Photography with model",
       photo: null as File | null,
       upscaleImage: "no",
+      customDirection: "",
     },
   });
 
@@ -41,11 +43,12 @@ export default function ProductPhotographyModelForm() {
     try {
       const dataToSend = new FormData();
       dataToSend.append("operationType", formData.operationType);
+      dataToSend.append("customDirection", formData.customDirection);
       dataToSend.append("upscaleImage", formData.upscaleImage);
       if (formData.photo) {
         dataToSend.append("photo", formData.photo);
       }
-      const response = await fetch(`${backendUrl}/gen-mdl-photography` , {
+      const response = await fetch(`${backendUrl}/gen-mdl-photography`, {
         method: "POST",
         headers: {},
         body: dataToSend,
@@ -174,7 +177,24 @@ export default function ProductPhotographyModelForm() {
                   </p>
                 )}
               </div>
-
+              <div>
+                <Label className="mb-3 block">
+                  Custom Direction{" "}
+                  <span className="text-nano-gray-400">(optional)</span>
+                </Label>
+                <Controller
+                  name="customDirection"
+                  control={productPhotographyModelForm.control}
+                  render={({ field }) => (
+                    <Textarea
+                      {...field}
+                      placeholder="If you have  any specific instructions for the product photography generation add here"
+                      className="border-nano-forest-800 bg-nano-olive-700 text-[14px] text-nano-gray-100"
+                      disabled={isLoading}
+                    />
+                  )}
+                />
+              </div>
               <div>
                 <Label className="mb-3 block">Upscale Image</Label>
                 <Controller
