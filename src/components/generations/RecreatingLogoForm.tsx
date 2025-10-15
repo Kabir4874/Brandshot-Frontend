@@ -24,7 +24,7 @@ export default function RecreatingLogoForm() {
   const [postError, setPostError] = useState<null | string>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL as string;
 
   const recreatingLogoForm = useForm({
     defaultValues: {
@@ -48,7 +48,7 @@ export default function RecreatingLogoForm() {
       if (formData.photo) {
         dataToSend.append("photo", formData.photo);
       }
-      const response = await fetch(backendUrl as string, {
+      const response = await fetch(`${backendUrl}/logo-recreate`, {
         method: "POST",
         headers: {},
         body: dataToSend,
