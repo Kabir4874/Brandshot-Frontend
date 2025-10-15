@@ -8,6 +8,7 @@ import GeneratingLogoForm from '@/components/generations/GeneratingLogoForm';
 import ProductPhotographyForm from '@/components/generations/ProductPhotographyForm';
 import ProductPhotographyModelForm from '@/components/generations/ProductPhotographyModelForm';
 import RecreatingLogoForm from '@/components/generations/RecreatingLogoForm';
+import VideoGenerationForm from '@/components/generations/VideoGenerationForm';
 
 export default function Generations() {
   const [activeTab, setActiveTab] = useState('ad-creative');
@@ -34,6 +35,7 @@ export default function Generations() {
             <button onClick={() => setActiveTab('product-photography-model')} className={`text-xs md:text-sm pb-2 ${activeTab === 'product-photography-model' ? 'border-b-2 border-emerald-500 text-emerald-500' : 'text-nano-gray-100/85'}`}>Product Photography with Model</button>
             <button onClick={() => setActiveTab('generating-logo')} className={`text-xs md:text-sm pb-2 ${activeTab === 'generating-logo' ? 'border-b-2 border-emerald-500 text-emerald-500' : 'text-nano-gray-100/85'}`}>Generating Logo</button>
             <button onClick={() => setActiveTab('recreating-logo')} className={`text-xs md:text-sm pb-2 ${activeTab === 'recreating-logo' ? 'border-b-2 border-emerald-500 text-emerald-500' : 'text-nano-gray-100/85'}`}>Recreating Logo</button>
+            <button onClick={() => setActiveTab('video-generation')} className={`text-xs md:text-sm pb-2 ${activeTab === 'video-generation' ? 'border-b-2 border-emerald-500 text-emerald-500' : 'text-nano-gray-100/85'}`}>Generate Video Ad</button>
           </div>
 
           {/* Mobile Select */}
@@ -49,6 +51,7 @@ export default function Generations() {
                 <SelectItem value="product-photography-model">Product Photography with Model</SelectItem>
                 <SelectItem value="generating-logo">Generating Logo</SelectItem>
                 <SelectItem value="recreating-logo">Recreating Logo</SelectItem>
+                <SelectItem value="video-generation">Generate Video Ad</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -67,6 +70,9 @@ export default function Generations() {
 
           {/* ---------Recreating Logo Tab ---------*/}
           {activeTab === 'recreating-logo' && <RecreatingLogoForm />}
+
+          {/* ---------Video Generation Tab ---------*/}
+          {activeTab === 'video-generation' && <VideoGenerationForm />}
         </div>
       </div>
     </main>
