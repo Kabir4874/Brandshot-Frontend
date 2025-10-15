@@ -17,6 +17,7 @@ import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
 import { GenerationResponse } from "@/types/generation";
 import { Download, Plus, X } from "lucide-react";
+import { sanitizeStringForJson } from "../TextSanitizer";
 
 export default function ProductPhotographyForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,10 +41,16 @@ export default function ProductPhotographyForm() {
     setOutput(null);
     setPostError(null);
 
+    // -----------------Sanitize the customDirection input before sending
+    const sanitizedCustomDirection = sanitizeStringForJson(
+      formData.customDirection
+    );
+
     try {
       const dataToSend = new FormData();
       dataToSend.append("operationType", formData.operationType);
-      dataToSend.append("customDirection", formData.customDirection);
+       // -------Use the sanitized value for the FormData
+      dataToSend.append("customDirection", sanitizedCustomDirection);
       dataToSend.append("upscaleImage", formData.upscaleImage);
       if (formData.photo) {
         dataToSend.append("photo", formData.photo);
